@@ -1,0 +1,8 @@
+github.com/shopspring/decimal v1.3.1 h1:2Usl1nmF/WZucqkFZhnfFYxxxu8LG21F6nPQBE5gKV8=
+github.com/shopspring/decimal v1.3.1/go.mod h1:DKyhrW/HYNuLGql+MJL6WCR6knT2jwCFRcu2hWCYk4o=
+github.com/tobycroft/Calc v1.2.0 h1:yyrS8ihSNAFA/1P21VyDlDmZMTuoxien7IfefjLFgZA=
+github.com/tobycroft/Calc v1.2.0/go.mod h1:Rtbth5rVSBICUCh2tH0tQwB1x2SHzhtkyB1FndlETEA=
+github.com/tobycroft/HttpRequest v1.1.5 h1:NUAjTVSoanjVNny1GVaYKaxfJJd26fIY4dj3RoRMxao=
+github.com/tobycroft/HttpRequest v1.1.5/go.mod h1:WYJFLv/vPAQ7yIjkAbSnfq/ikuIrDr8wmSDXGDN34q0=
+github.com/tobycroft/TuuzArray v1.0.0 h1:e/ytgZnlvHYjZJJEQql0mAO84tFL0ZglVIP45mzcqs0=
+github.com/tobycroft/TuuzArray v1.0.0/go.mod h1:Rxmob1ys0zOC/U8z7Q+XVWc8MteTXIHTntRo/JUXJcE=
