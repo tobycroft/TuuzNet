@@ -15,6 +15,16 @@ import (
 	"time"
 )
 
+func (r *Curl) NewRequest() *Curl {
+	req := request{}
+	req.SetTimeout(30)
+	req.SetHeaders(map[string]string{})
+	req.SetCookies(map[string]string{})
+	req.Transport(transport)
+	r.request = req
+	return r
+}
+
 type request struct {
 	cli               *http.Client
 	transport         *http.Transport
