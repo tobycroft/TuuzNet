@@ -5,13 +5,13 @@ import (
 )
 
 type Get struct {
-	Curl
-	ret *response
-	err error
+	curl Curl
+	ret  *response
+	err  error
 }
 
 func (self Get) Get(url string, queries map[string]interface{}, headers map[string]string, cookies map[string]string) (string, error) {
-	req := self.Curl.NewRequest().request
+	req := self.curl.NewRequest().request
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
 	req.SetTimeout(5)
@@ -32,7 +32,7 @@ func (self Get) Get(url string, queries map[string]interface{}, headers map[stri
 }
 
 func (self Get) GetCookie(url string, queries map[string]interface{}, headers map[string]string, cookies map[string]string) (string, map[string]interface{}, error) {
-	req := self.Curl.NewRequest().request
+	req := self.curl.NewRequest().request
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
 	req.SetTimeout(5)
@@ -40,7 +40,7 @@ func (self Get) GetCookie(url string, queries map[string]interface{}, headers ma
 	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
 	ret, err := req.Get(url, queries)
 	body, err := ret.bodystring()
-	cookie_arr := self.CookieHandler(ret.Cookies())
+	cookie_arr := self.curl.cookieHandler(ret.Cookies())
 	//fmt.Println(cookie_arr)
 	if err != nil {
 		return "", cookie_arr, err
