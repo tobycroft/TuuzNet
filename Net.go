@@ -35,3 +35,19 @@ func (req *Curl) Http_build_query(querymap map[string]interface{}) string {
 	//fmt.Println(query.Encode())
 	return query.Encode()
 }
+
+type Net struct {
+	Curl
+}
+
+type Curl struct {
+	request *request
+}
+
+type Post struct {
+	Curl
+}
+
+type Get struct {
+	Curl
+}
