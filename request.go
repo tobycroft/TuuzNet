@@ -244,33 +244,43 @@ func buildUrl(url string, data ...interface{}) (string, error) {
 	if err != nil {
 		return url, err
 	}
+
 	if len(data) > 0 && data[0] != nil {
 		switch data[0].(type) {
 		case map[string]any:
-			for k, v := range data[0].(map[string]any) {
-				query = append(query, fmt.Sprintf("%s=%s", k, v))
+			for k, v := range data[0].(map[string]interface{}) {
+				vv := ""
+				switch v.(type) {
+				case string:
+					vv = v.(string)
+					break
+
+				default:
+					b, err := sonic.Marshal(v)
+					if err != nil {
+						return url, err
+					}
+					vv = string(b)
+				}
+				query = append(query, fmt.Sprintf("%s=%s", k, vv))
 			}
-			break
-		case map[string]string:
-			for k, v := range data[0].(map[string]string) {
-				query = append(query, fmt.Sprintf("%s=%s", k, v))
-			}
-			break
 		case string:
 			param := data[0].(string)
 			if param != "" {
 				query = append(query, param)
 			}
-			break
 		default:
 			return url, errors.New("incorrect parameter format.")
 		}
 
 	}
+
 	list := strings.Split(url, "?")
+
 	if len(query) > 0 {
 		return fmt.Sprintf("%s?%s", list[0], strings.Join(query, "&")), nil
 	}
+
 	return list[0], nil
 }
 
