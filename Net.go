@@ -16,7 +16,7 @@ var transport = &http.Transport{
 	MaxIdleConns: 100,
 }
 
-func (req *Curl) NewRequest() *Curl {
+func (req Curl) NewRequest() Curl {
 	req.request = new(request)
 	req.request.SetTimeout(30)
 	req.request.SetHeaders(map[string]string{})
