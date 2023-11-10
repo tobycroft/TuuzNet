@@ -2,8 +2,7 @@ package Net
 
 func (self *Post) Rpc(url string, postData interface{}, username, password string) (string, error) {
 	req := self.Curl.NewRequest().request
-	header := map[string]string{"Content-type": "application/json"}
-	req.SetHeaders(header)
+	self.Curl.SetHeaderJson()
 	req.SetBasicAuth(username, password)
 	req.SetTimeout(5)
 	req.DisableKeepAlives(true)
@@ -20,8 +19,7 @@ func (self *Post) Rpc(url string, postData interface{}, username, password strin
 
 func (self *Post) PostRaw(url string, postData interface{}) (string, error) {
 	req := self.Curl.NewRequest().request
-	header := map[string]string{"Content-type": "application/json"}
-	req.SetHeaders(header)
+	self.Curl.SetHeaderTextPlain()
 	req.SetTimeout(5)
 	req.DisableKeepAlives(true)
 	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
@@ -36,10 +34,28 @@ func (self *Post) PostRaw(url string, postData interface{}) (string, error) {
 }
 
 func (self *Post) Post(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) (string, error) {
-	// 链式操作
-
 	req := self.Curl.NewRequest().request
 	self.Curl.SetHeaderFormData()
+	req.SetHeaders(headers)
+	req.SetCookies(cookies)
+	req.SetTimeout(5)
+	req.DisableKeepAlives(true)
+	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
+	q := ""
+	req.Transport(transport)
+	if queries != nil {
+		q = "?" + self.Http_build_query(queries)
+	}
+	ret, err := req.Post(url+q, postData)
+	if err != nil {
+		return "", err
+	}
+	return ret.Content()
+}
+
+func (self *Post) PostJson(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) (string, error) {
+	req := self.Curl.NewRequest().request
+	self.Curl.SetHeaderJson()
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
 	req.SetTimeout(5)
