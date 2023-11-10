@@ -1,6 +1,6 @@
 package Net
 
-func (self *Post) Rpc(url string, postData interface{}, username, password string) (string, error) {
+func (self Post) Rpc(url string, postData interface{}, username, password string) (string, error) {
 	req := self.Curl.NewRequest().request
 	self.Curl.SetHeaderJson()
 	req.SetBasicAuth(username, password)
@@ -16,7 +16,7 @@ func (self *Post) Rpc(url string, postData interface{}, username, password strin
 	}
 }
 
-func (self *Post) PostRaw(url string, postData interface{}) (string, error) {
+func (self Post) PostRaw(url string, postData interface{}) (string, error) {
 	req := self.Curl.NewRequest().request
 	self.Curl.SetHeaderTextPlain()
 	req.SetTimeout(5)
@@ -31,7 +31,7 @@ func (self *Post) PostRaw(url string, postData interface{}) (string, error) {
 	}
 }
 
-func (self *Post) Post(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) (string, error) {
+func (self Post) Post(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) (string, error) {
 	req := self.Curl.NewRequest().request
 	self.Curl.SetHeaderFormData()
 	req.SetHeaders(headers)
@@ -50,7 +50,7 @@ func (self *Post) Post(url string, queries map[string]interface{}, postData map[
 	return ret.Content()
 }
 
-func (self *Post) PostJson(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) (string, error) {
+func (self Post) PostJson(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) (string, error) {
 	req := self.Curl.NewRequest().request
 	self.Curl.SetHeaderJson()
 	req.SetHeaders(headers)
@@ -69,7 +69,7 @@ func (self *Post) PostJson(url string, queries map[string]interface{}, postData 
 	return ret.Content()
 }
 
-func (self *Post) PostCookie(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) (body string, cookie map[string]interface{}, err error) {
+func (self Post) PostCookie(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) (body string, cookie map[string]interface{}, err error) {
 	req := self.Curl.NewRequest().request
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)

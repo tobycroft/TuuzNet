@@ -44,7 +44,7 @@ func (self *Curl) CookieHandler(resp_headers []*http.Cookie) map[string]interfac
 	return cookie_arr
 }
 
-func (self *Post) CookieHandler2(resp_header map[string]interface{}) map[string]interface{} {
+func (self Post) CookieHandler2(resp_header map[string]interface{}) map[string]interface{} {
 	cookie := strings.Split(Calc.Any2String(resp_header["Set-Cookie"]), "; ")
 	cookie_arr := make(map[string]interface{})
 	for _, v := range cookie {
