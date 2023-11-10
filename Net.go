@@ -38,5 +38,5 @@ func (req *Curl) Http_build_query(querymap map[string]interface{}) string {
 
 type Net struct {
 	Curl
-	WebSocket
+	WsClient
 }
