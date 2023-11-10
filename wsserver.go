@@ -21,7 +21,6 @@ type WsServer struct {
 }
 
 func (ws WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHeader http.Header) {
-	defer ws.Conn.Close()
 	upd := websocket.Upgrader{}
 	upd.EnableCompression = false
 	upd.CheckOrigin = func(r *http.Request) bool {
