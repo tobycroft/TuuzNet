@@ -5,7 +5,7 @@ import (
 )
 
 type Get struct {
-	curl               Curl
+	curl               *Curl
 	InsecureSkipVerify bool
 	ret                *response
 	err                error
