@@ -2,11 +2,10 @@ package Net
 
 import (
 	"crypto/tls"
-	"fmt"
 )
 
 type Post struct {
-	curl               Curl
+	curl               *Curl
 	InsecureSkipVerify bool
 	ret                *response
 	err                error
@@ -50,7 +49,6 @@ func (self Post) PostFormData(url string, queries map[string]interface{}, postDa
 }
 
 func (self Post) PostUrlXEncode(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) Post {
-	fmt.Println(self.curl.request)
 	req := self.curl.NewRequest().request
 	self.curl.SetHeaderUrlEncode()
 	req.SetHeaders(headers)
