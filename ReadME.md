@@ -70,22 +70,22 @@ if ret1.Retcode == 0 {
 }
 ```
 
-Ver+ v1.1.2
+Ver+ v1.1.4
 
 ```go
-data, err := Net.Post{}.Post(botinfo["url"].(string)+"/get_group_info", nil, post, nil, nil)
+data, err := Net.Post{}.PostUrlXEncode(botinfo["url"].(string)+"/get_group_info", nil, post, nil, nil).RetString()
 if err != nil {
-return GroupInfo{}, err
+    return GroupInfo{}, err
 }
 var ret1 GroupInfoRet
 jsr := jsoniter.ConfigCompatibleWithStandardLibrary
 err = jsr.UnmarshalFromString(data, &ret1)
 if err != nil {
-return GroupInfo{}, err
+    return GroupInfo{}, err
 }
 if ret1.Retcode == 0 {
-return ret1.Data, nil
+    return ret1.Data, nil
 } else {
-return GroupInfo{}, errors.New(ret1.Status)
+    return GroupInfo{}, errors.New(ret1.Status)
 }
 ```
