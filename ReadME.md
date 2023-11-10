@@ -18,7 +18,7 @@ After v1.1 the version upgrades will be under compatible considered
 - High performance 高性能
 - Full function 全功能
 
-# How to use(v1.1.0+)
+# How to use(v1.1.4+)
 
 Initial with
 
