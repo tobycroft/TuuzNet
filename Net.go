@@ -20,7 +20,7 @@ var transport = &http.Transport{
 
 func (req *Curl) NewRequest() {
 	req.request = &request{}
-	req.request.SetTimeout(30 * time.Second)
+	req.request.SetTimeout(30)
 	req.request.SetHeaders(map[string]string{})
 	req.request.SetCookies(map[string]string{})
 	req.request.Transport(transport)

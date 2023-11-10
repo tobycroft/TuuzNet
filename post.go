@@ -1,15 +1,11 @@
 package Net
 
-import (
-	"time"
-)
-
 func (self *Post) Rpc(url string, postData interface{}, username, password string) (string, error) {
 	req := self.request
 	header := map[string]string{"Content-type": "application/json"}
 	req.SetHeaders(header)
 	req.SetBasicAuth(username, password)
-	req.SetTimeout(5 * time.Second)
+	req.SetTimeout(5)
 	req.DisableKeepAlives(true)
 	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
 	req.Transport(transport)
@@ -26,7 +22,7 @@ func (self *Post) PostRaw(url string, postData interface{}) (string, error) {
 	req := self.request
 	header := map[string]string{"Content-type": "application/json"}
 	req.SetHeaders(header)
-	req.SetTimeout(5 * time.Second)
+	req.SetTimeout(5)
 	req.DisableKeepAlives(true)
 	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
 	req.Transport(transport)
@@ -42,9 +38,10 @@ func (self *Post) PostRaw(url string, postData interface{}) (string, error) {
 func (self *Post) Post(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) (string, error) {
 	// 链式操作
 	req := self.request
+	self.Curl.SetHeaderFormData()
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
-	req.SetTimeout(5 * time.Second)
+	req.SetTimeout(5)
 	req.DisableKeepAlives(true)
 	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
 	q := ""
@@ -63,7 +60,7 @@ func (self *Post) PostCookie(url string, queries map[string]interface{}, postDat
 	req := self.request
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
-	req.SetTimeout(5 * time.Second)
+	req.SetTimeout(5)
 	req.DisableKeepAlives(true)
 	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
 	req.Transport(transport)
@@ -86,7 +83,7 @@ func (self *Post) PostCookie(url string, queries map[string]interface{}, postDat
 //
 //	req.SetHeaders(headers)
 //	req.SetCookies(cook)
-//	req.SetTimeout(5 * time.Second)
+//	req.SetTimeout(5 )
 //	req.DisableKeepAlives(true)
 //	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
 //	req.Transport(transport)
@@ -110,7 +107,7 @@ func (self *Post) PostCookie(url string, queries map[string]interface{}, postDat
 //
 //	req.SetHeaders(headers)
 //	req.SetCookies(cook)
-//	req.SetTimeout(5 * time.Second)
+//	req.SetTimeout(5 )
 //	req.DisableKeepAlives(true)
 //	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
 //	req.Transport(transport)
@@ -133,7 +130,7 @@ func (self *Post) PostCookie(url string, queries map[string]interface{}, postDat
 //
 //	req.SetHeaders(headers)
 //	req.SetCookies(cook)
-//	req.SetTimeout(5 * time.Second)
+//	req.SetTimeout(5 )
 //	req.DisableKeepAlives(true)
 //	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
 //	req.Transport(transport)
@@ -163,7 +160,7 @@ func (self *Post) PostCookie(url string, queries map[string]interface{}, postDat
 //
 //	req.SetHeaders(headers)
 //	req.SetCookies(cook)
-//	req.SetTimeout(5 * time.Second)
+//	req.SetTimeout(5 )
 //	req.DisableKeepAlives(true)
 //	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
 //	req.Transport(transport)

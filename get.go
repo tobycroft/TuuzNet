@@ -2,14 +2,13 @@ package Net
 
 import (
 	"fmt"
-	"time"
 )
 
 func (self *Get) Get(url string, queries map[string]interface{}, headers map[string]string, cookies map[string]string) (string, error) {
 	req := self.request
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
-	req.SetTimeout(5 * time.Second)
+	req.SetTimeout(5)
 	req.DisableKeepAlives(true)
 	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
 	req.Transport(transport)
@@ -31,7 +30,7 @@ func (self *Get) GetCookie(url string, queries map[string]interface{}, headers m
 	req := self.request
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
-	req.SetTimeout(5 * time.Second)
+	req.SetTimeout(5)
 	req.DisableKeepAlives(true)
 	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
 	req.Transport(transport)

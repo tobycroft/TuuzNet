@@ -6,7 +6,6 @@ type Net struct {
 
 type Curl struct {
 	request *request
-	Header
 }
 
 type Post struct {
@@ -15,7 +14,4 @@ type Post struct {
 
 type Get struct {
 	Curl
-}
-
-type Header struct {
 }
