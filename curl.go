@@ -1,7 +1,5 @@
 package Net
 
 type Curl struct {
-	request request
-	*Post
-	*Get
+	request *request
 }
