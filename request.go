@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"reflect"
 	"strings"
 	"time"
 )
@@ -182,15 +181,17 @@ func (r *request) buildBody(d ...interface{}) (io.Reader, error) {
 		return strings.NewReader(""), nil
 	}
 
-	t := reflect.TypeOf(d[0]).String()
-	if t != "string" && !strings.Contains(t, "map[string]interface") {
-		return strings.NewReader(""), errors.New("incorrect parameter format.")
-	}
-
-	if t == "string" {
+	switch d[0].(type) {
+	case string:
 		return strings.NewReader(d[0].(string)), nil
-	}
 
+	case map[string]any:
+		break
+
+	default:
+		return strings.NewReader(""), errors.New("incorrect parameter format.")
+
+	}
 	if r.isJson() {
 		if b, err := sonic.Marshal(d[0]); err != nil {
 			return nil, err
@@ -245,14 +246,16 @@ func buildUrl(url string, data ...interface{}) (string, error) {
 	}
 
 	if len(data) > 0 && data[0] != nil {
-		t := reflect.TypeOf(data[0]).String()
-		switch t {
-		case "map[string]interface {}":
+		switch data[0].(type) {
+		case map[string]any:
 			for k, v := range data[0].(map[string]interface{}) {
 				vv := ""
-				if reflect.TypeOf(v).String() == "string" {
+				switch v.(type) {
+				case string:
 					vv = v.(string)
-				} else {
+					break
+
+				default:
 					b, err := sonic.Marshal(v)
 					if err != nil {
 						return url, err
@@ -261,7 +264,7 @@ func buildUrl(url string, data ...interface{}) (string, error) {
 				}
 				query = append(query, fmt.Sprintf("%s=%s", k, vv))
 			}
-		case "string":
+		case string:
 			param := data[0].(string)
 			if param != "" {
 				query = append(query, param)
@@ -301,7 +304,7 @@ func (r *request) Get(url string, data ...interface{}) (*response, error) {
 }
 
 // Post is a post http request
-func (r *request) Post(url string, data ...interface{}) (*response, error) {
+func (r *request) post(url string, data ...interface{}) (*response, error) {
 	return r.request(http.MethodPost, url, data...)
 }
 

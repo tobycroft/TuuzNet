@@ -53,7 +53,27 @@ fmt.Println(string(<-ws.ReadChannel))
 The old version:
 
 ```go
-data, err := Net.Post(botinfo["url"].(string)+"/get_group_info", nil, post, nil, nil)
+data, err: = Net.Post(botinfo["url"].(string) + "/get_group_info", nil, post, nil, nil)
+if err != nil {
+    return GroupInfo {}, err
+}
+var ret1 GroupInfoRet
+jsr: = jsoniter.ConfigCompatibleWithStandardLibrary
+err = jsr.UnmarshalFromString(data, & ret1)
+if err != nil {
+    return GroupInfo {}, err
+}
+if ret1.Retcode == 0 {
+    return ret1.Data, nil
+} else {
+    return GroupInfo {}, errors.New(ret1.Status)
+}
+```
+
+Ver+ v1.1.2
+
+```go
+data, err := Net.Post{}.Post(botinfo["url"].(string)+"/get_group_info", nil, post, nil, nil)
 if err != nil {
 return GroupInfo{}, err
 }
@@ -69,5 +89,3 @@ return ret1.Data, nil
 return GroupInfo{}, errors.New(ret1.Status)
 }
 ```
-
-Ver+ v1.1

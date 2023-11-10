@@ -1,37 +1,33 @@
 package Net
 
-func (self Post) Rpc(url string, postData interface{}, username, password string) (string, error) {
+type Post struct {
+	Curl
+	ret *response
+	err error
+}
+
+func (self Post) Rpc(url string, postData interface{}, username, password string) Post {
 	req := self.Curl.NewRequest().request
 	self.Curl.SetHeaderJson()
 	req.SetBasicAuth(username, password)
 	req.SetTimeout(5)
 	req.DisableKeepAlives(true)
 	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
-	ret, err := req.Post(url, postData)
-	body, err := ret.Content()
-	if err != nil {
-		return "", err
-	} else {
-		return body, err
-	}
+	self.ret, self.err = req.post(url, postData)
+	return self
 }
 
-func (self Post) PostRaw(url string, postData interface{}) (string, error) {
+func (self Post) Raw(url string, postData interface{}) Post {
 	req := self.Curl.NewRequest().request
 	self.Curl.SetHeaderTextPlain()
 	req.SetTimeout(5)
 	req.DisableKeepAlives(true)
 	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
-	ret, err := req.Post(url, postData)
-	body, err := ret.Content()
-	if err != nil {
-		return "", err
-	} else {
-		return body, err
-	}
+	self.ret, self.err = req.post(url, postData)
+	return self
 }
 
-func (self Post) Post(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) (string, error) {
+func (self Post) FormData(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) Post {
 	req := self.Curl.NewRequest().request
 	self.Curl.SetHeaderFormData()
 	req.SetHeaders(headers)
@@ -43,14 +39,27 @@ func (self Post) Post(url string, queries map[string]interface{}, postData map[s
 	if queries != nil {
 		q = "?" + self.Http_build_query(queries)
 	}
-	ret, err := req.Post(url+q, postData)
-	if err != nil {
-		return "", err
-	}
-	return ret.Content()
+	self.ret, self.err = req.post(url+q, postData)
+	return self
 }
 
-func (self Post) PostJson(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) (string, error) {
+func (self Post) UrlXEncode(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) Post {
+	req := self.Curl.NewRequest().request
+	self.Curl.SetHeaderUrlEncode()
+	req.SetHeaders(headers)
+	req.SetCookies(cookies)
+	req.SetTimeout(5)
+	req.DisableKeepAlives(true)
+	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
+	q := ""
+	if queries != nil {
+		q = "?" + self.Http_build_query(queries)
+	}
+	self.ret, self.err = req.post(url+q, postData)
+	return self
+}
+
+func (self Post) Json(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) Post {
 	req := self.Curl.NewRequest().request
 	self.Curl.SetHeaderJson()
 	req.SetHeaders(headers)
@@ -62,33 +71,22 @@ func (self Post) PostJson(url string, queries map[string]interface{}, postData m
 	if queries != nil {
 		q = "?" + self.Http_build_query(queries)
 	}
-	ret, err := req.Post(url+q, postData)
-	if err != nil {
-		return "", err
-	}
-	return ret.Content()
+	self.ret, self.err = req.post(url+q, postData)
+	return self
 }
 
-func (self Post) PostCookie(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) (body string, cookie map[string]interface{}, err error) {
-	req := self.Curl.NewRequest().request
-	req.SetHeaders(headers)
-	req.SetCookies(cookies)
-	req.SetTimeout(5)
-	req.DisableKeepAlives(true)
-	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
-	ret, err := req.Post(url+"?"+self.Http_build_query(queries), postData)
-	if err != nil {
-		return
-	}
-	body, err = ret.Content()
-	if err != nil {
-		return
-	}
-	cookie_arr := self.CookieHandler(ret.Cookies())
-	//fmt.Println(cookie_arr)
-	if err != nil {
-		return "", cookie_arr, err
-	} else {
-		return body, cookie_arr, err
-	}
+func (self Post) GetCookie() (cookie map[string]interface{}) {
+	return self.CookieHandler(self.ret.Cookies())
+}
+
+func (self Post) GetString() (string, error) {
+	return self.ret.bodystring()
+}
+
+func (self Post) Getbytes() ([]byte, error) {
+	return self.ret.bodybytes()
+}
+
+func (self Post) GetJson(v any) error {
+	return self.ret.bodyjson(v)
 }

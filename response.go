@@ -59,7 +59,7 @@ func (r *response) Cookies() []*http.Cookie {
 	return []*http.Cookie{}
 }
 
-func (r *response) Body() ([]byte, error) {
+func (r *response) bodybytes() ([]byte, error) {
 	if r == nil {
 		return []byte{}, errors.New("HttpRequest.response is nil.")
 	}
@@ -83,20 +83,16 @@ func (r *response) Body() ([]byte, error) {
 	return b, nil
 }
 
-func (r *response) Content() (string, error) {
-	b, err := r.Body()
+func (r *response) bodystring() (string, error) {
+	b, err := r.bodybytes()
 	if err != nil {
 		return "", nil
 	}
 	return string(b), nil
 }
 
-func (r *response) Json(v interface{}) error {
-	return r.Unmarshal(v)
-}
-
-func (r *response) Unmarshal(v interface{}) error {
-	b, err := r.Body()
+func (r *response) bodyjson(v interface{}) error {
+	b, err := r.bodybytes()
 	if err != nil {
 		return err
 	}
@@ -115,7 +111,7 @@ func (r *response) Close() error {
 }
 
 func (r *response) JsonInPrettify() (ret string, err error) {
-	b, err := r.Body()
+	b, err := r.bodybytes()
 	if err != nil {
 		return "", err
 	}
