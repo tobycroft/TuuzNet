@@ -5,7 +5,7 @@ import (
 )
 
 func (self *Get) Get(url string, queries map[string]interface{}, headers map[string]string, cookies map[string]string) (string, error) {
-	req := self.request
+	req := self.Curl.NewRequest().request
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
 	req.SetTimeout(5)
@@ -27,7 +27,7 @@ func (self *Get) Get(url string, queries map[string]interface{}, headers map[str
 }
 
 func (self *Get) GetCookie(url string, queries map[string]interface{}, headers map[string]string, cookies map[string]string) (string, map[string]interface{}, error) {
-	req := self.request
+	req := self.Curl.NewRequest().request
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
 	req.SetTimeout(5)

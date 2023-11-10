@@ -18,12 +18,13 @@ var transport = &http.Transport{
 	MaxIdleConns: 100,
 }
 
-func (req *Curl) NewRequest() {
+func (req *Curl) NewRequest() *Curl {
 	req.request = &request{}
 	req.request.SetTimeout(30)
 	req.request.SetHeaders(map[string]string{})
 	req.request.SetCookies(map[string]string{})
 	req.request.Transport(transport)
+	return req
 }
 
 func Http_build_query(querymap map[string]interface{}) string {
