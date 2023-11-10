@@ -19,11 +19,11 @@ func (ws WsServer) prepare_channel() {
 	ws.WriteChannel = make(chan []byte, 1)
 }
 
-func (ws WsServer) NewServer(w *http.ResponseWriter, r *http.Request, responseHeader *http.Header) {
+func (ws WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHeader http.Header) {
 	defer ws.Conn.Close()
 	upd := websocket.Upgrader{}
 	upd.EnableCompression = false
-	ws.Conn, ws.err = upd.Upgrade(*w, r, *responseHeader)
+	ws.Conn, ws.err = upd.Upgrade(w, r, responseHeader)
 }
 
 func (ws WsServer) recv_data() {
