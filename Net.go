@@ -1,10 +1,8 @@
 package Net
 
 import (
-	"github.com/tobycroft/Calc"
 	"net"
 	"net/http"
-	"net/url"
 	"time"
 )
 
@@ -25,15 +23,6 @@ func (req *Curl) NewRequest() *Curl {
 	req.request.SetCookies(map[string]string{})
 	req.request.Transport(transport)
 	return req
-}
-
-func (req *Curl) Http_build_query(querymap map[string]interface{}) string {
-	query := make(url.Values)
-	for k, v := range querymap {
-		query.Add(k, Calc.Any2String(v))
-	}
-	//fmt.Println(query.Encode())
-	return query.Encode()
 }
 
 type Net struct {
