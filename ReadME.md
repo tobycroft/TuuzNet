@@ -10,6 +10,8 @@ TuuzNet is a Network package for http request curl and websocket, focus in high 
 
 There will be a huge difference between v1.0 and 1.1 DO NOT UPDATE, the opreration way is different!
 
+After v1.1 the version upgrades will be under compatible considered
+
 # Advantage
 
 - simple use 简单易用
@@ -43,3 +45,25 @@ fmt.Println(string(<-ws.ReadChannel))
 ```
 
 范例2，使用NetPost
+
+The old version:
+
+```go
+data, err := Net.Post(botinfo["url"].(string)+"/get_group_info", nil, post, nil, nil)
+if err != nil {
+return GroupInfo{}, err
+}
+var ret1 GroupInfoRet
+jsr := jsoniter.ConfigCompatibleWithStandardLibrary
+err = jsr.UnmarshalFromString(data, &ret1)
+if err != nil {
+return GroupInfo{}, err
+}
+if ret1.Retcode == 0 {
+return ret1.Data, nil
+} else {
+return GroupInfo{}, errors.New(ret1.Status)
+}
+```
+
+Ver+ v1.1
