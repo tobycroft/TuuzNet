@@ -39,15 +39,3 @@ func (req *Curl) Http_build_query(querymap map[string]interface{}) string {
 type Net struct {
 	Curl
 }
-
-type Curl struct {
-	request *request
-}
-
-type Post struct {
-	Curl
-}
-
-type Get struct {
-	Curl
-}

@@ -36,7 +36,7 @@ import (
 //	return arr, err
 //}
 
-func CookieHandler(resp_headers []*http.Cookie) map[string]interface{} {
+func (self *Curl) CookieHandler(resp_headers []*http.Cookie) map[string]interface{} {
 	cookie_arr := make(map[string]interface{})
 	for _, resp_header := range resp_headers {
 		cookie_arr[resp_header.Name] = resp_header.Value
@@ -44,7 +44,7 @@ func CookieHandler(resp_headers []*http.Cookie) map[string]interface{} {
 	return cookie_arr
 }
 
-func CookieHandler2(resp_header map[string]interface{}) map[string]interface{} {
+func (self *Post) CookieHandler2(resp_header map[string]interface{}) map[string]interface{} {
 	cookie := strings.Split(Calc.Any2String(resp_header["Set-Cookie"]), "; ")
 	cookie_arr := make(map[string]interface{})
 	for _, v := range cookie {

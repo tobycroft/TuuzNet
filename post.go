@@ -7,7 +7,6 @@ func (self *Post) Rpc(url string, postData interface{}, username, password strin
 	req.SetTimeout(5)
 	req.DisableKeepAlives(true)
 	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
-	req.Transport(transport)
 	ret, err := req.Post(url, postData)
 	body, err := ret.Content()
 	if err != nil {
@@ -23,7 +22,6 @@ func (self *Post) PostRaw(url string, postData interface{}) (string, error) {
 	req.SetTimeout(5)
 	req.DisableKeepAlives(true)
 	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
-	req.Transport(transport)
 	ret, err := req.Post(url, postData)
 	body, err := ret.Content()
 	if err != nil {
@@ -42,7 +40,6 @@ func (self *Post) Post(url string, queries map[string]interface{}, postData map[
 	req.DisableKeepAlives(true)
 	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
 	q := ""
-	req.Transport(transport)
 	if queries != nil {
 		q = "?" + self.Http_build_query(queries)
 	}
@@ -62,7 +59,6 @@ func (self *Post) PostJson(url string, queries map[string]interface{}, postData 
 	req.DisableKeepAlives(true)
 	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
 	q := ""
-	req.Transport(transport)
 	if queries != nil {
 		q = "?" + self.Http_build_query(queries)
 	}
@@ -73,18 +69,22 @@ func (self *Post) PostJson(url string, queries map[string]interface{}, postData 
 	return ret.Content()
 }
 
-func (self *Post) PostCookie(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) (string, map[string]interface{}, error) {
+func (self *Post) PostCookie(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) (body string, cookie map[string]interface{}, err error) {
 	req := self.Curl.NewRequest().request
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
 	req.SetTimeout(5)
 	req.DisableKeepAlives(true)
 	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
-	req.Transport(transport)
 	ret, err := req.Post(url+"?"+self.Http_build_query(queries), postData)
-	body, err := ret.Content()
-
-	cookie_arr := CookieHandler(ret.Cookies())
+	if err != nil {
+		return
+	}
+	body, err = ret.Content()
+	if err != nil {
+		return
+	}
+	cookie_arr := self.CookieHandler(ret.Cookies())
 	//fmt.Println(cookie_arr)
 	if err != nil {
 		return "", cookie_arr, err
