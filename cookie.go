@@ -1,9 +1,7 @@
 package Net
 
 import (
-	"github.com/tobycroft/Calc"
 	"net/http"
-	"strings"
 )
 
 //func CookieUpdater(new_cookie map[string]interface{}, ident string) {
@@ -36,22 +34,10 @@ import (
 //	return arr, err
 //}
 
-func (self *Curl) cookieHandler(resp_headers []*http.Cookie) map[string]interface{} {
+func (self Curl) cookieHandler(resp_headers []*http.Cookie) map[string]interface{} {
 	cookie_arr := make(map[string]interface{})
 	for _, resp_header := range resp_headers {
 		cookie_arr[resp_header.Name] = resp_header.Value
-	}
-	return cookie_arr
-}
-
-func (self Post) cookieHandler2(resp_header map[string]interface{}) map[string]interface{} {
-	cookie := strings.Split(Calc.Any2String(resp_header["Set-Cookie"]), "; ")
-	cookie_arr := make(map[string]interface{})
-	for _, v := range cookie {
-		split := strings.Split(v, "=")
-		if CookieTagChecker(split[0]) == true {
-			cookie_arr[split[0]] = split[1]
-		}
 	}
 	return cookie_arr
 }

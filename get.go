@@ -1,50 +1,51 @@
 package Net
 
 import (
-	"fmt"
+	"crypto/tls"
 )
 
 type Get struct {
-	curl Curl
-	ret  *response
-	err  error
+	curl               Curl
+	InsecureSkipVerify bool
+	ret                *response
+	err                error
 }
 
-func (self Get) Get(url string, queries map[string]interface{}, headers map[string]string, cookies map[string]string) (string, error) {
+func (self Get) Get(url string, queries map[string]interface{}, headers map[string]string, cookies map[string]string) Get {
 	req := self.curl.NewRequest().request
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
 	req.SetTimeout(5)
 	req.DisableKeepAlives(true)
-	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
-	ret, err := req.Get(url, queries)
-	if err != nil {
-		fmt.Println(err)
-		return "", err
-	}
-	body, err := ret.bodystring()
-
-	if err != nil {
-		return "", err
-	} else {
-		return body, err
-	}
+	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.InsecureSkipVerify})
+	self.ret, self.err = req.Get(url, queries)
+	return self
 }
 
-func (self Get) GetCookie(url string, queries map[string]interface{}, headers map[string]string, cookies map[string]string) (string, map[string]interface{}, error) {
-	req := self.curl.NewRequest().request
-	req.SetHeaders(headers)
-	req.SetCookies(cookies)
-	req.SetTimeout(5)
-	req.DisableKeepAlives(true)
-	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
-	ret, err := req.Get(url, queries)
-	body, err := ret.bodystring()
-	cookie_arr := self.curl.cookieHandler(ret.Cookies())
-	//fmt.Println(cookie_arr)
-	if err != nil {
-		return "", cookie_arr, err
-	} else {
-		return body, cookie_arr, err
+func (self Get) RetCookie() (cookie map[string]interface{}, err error) {
+	if self.err != nil {
+		return nil, self.err
 	}
+	return self.curl.cookieHandler(self.ret.Cookies()), nil
+}
+
+func (self Get) RetString() (string, error) {
+	if self.err != nil {
+		return "", self.err
+	}
+	return self.ret.bodystring()
+}
+
+func (self Get) RetBytes() ([]byte, error) {
+	if self.err != nil {
+		return nil, self.err
+	}
+	return self.ret.bodybytes()
+}
+
+func (self Get) RetJson(v any) error {
+	if self.err != nil {
+		return self.err
+	}
+	return self.ret.bodyjson(v)
 }
