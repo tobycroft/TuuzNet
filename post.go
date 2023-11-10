@@ -48,7 +48,7 @@ func (self *Post) Post(url string, queries map[string]interface{}, postData map[
 	q := ""
 	req.Transport(transport)
 	if queries != nil {
-		q = "?" + Http_build_query(queries)
+		q = "?" + self.Http_build_query(queries)
 	}
 	ret, err := req.Post(url+q, postData)
 	if err != nil {
@@ -65,7 +65,7 @@ func (self *Post) PostCookie(url string, queries map[string]interface{}, postDat
 	req.DisableKeepAlives(true)
 	//req.SetTLSClient(&tls.Config{InsecureSkipVerify: true})
 	req.Transport(transport)
-	ret, err := req.Post(url+"?"+Http_build_query(queries), postData)
+	ret, err := req.Post(url+"?"+self.Http_build_query(queries), postData)
 	body, err := ret.Content()
 
 	cookie_arr := CookieHandler(ret.Cookies())

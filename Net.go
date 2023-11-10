@@ -27,7 +27,7 @@ func (req *Curl) NewRequest() *Curl {
 	return req
 }
 
-func Http_build_query(querymap map[string]interface{}) string {
+func (req *Curl) Http_build_query(querymap map[string]interface{}) string {
 	query := make(url.Values)
 	for k, v := range querymap {
 		query.Add(k, Calc.Any2String(v))
