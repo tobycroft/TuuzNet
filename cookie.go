@@ -1,7 +1,7 @@
 package Net
 
 import (
-	"github.com/tobycroft/Calc"
+	"fmt"
 	"net/http"
 	"strings"
 )
@@ -45,7 +45,7 @@ func (self *Curl) cookieHandler(resp_headers []*http.Cookie) map[string]interfac
 }
 
 func (self Post) cookieHandler2(resp_header map[string]interface{}) map[string]interface{} {
-	cookie := strings.Split(Calc.Any2String(resp_header["Set-Cookie"]), "; ")
+	cookie := strings.Split(fmt.Sprint(resp_header["Set-Cookie"]), "; ")
 	cookie_arr := make(map[string]interface{})
 	for _, v := range cookie {
 		split := strings.Split(v, "=")
