@@ -20,6 +20,10 @@ After v1.1 the version upgrades will be under compatible considered
 
 # How to use(v1.1.0+)
 
+Initial with
+
+go get github.com/tobycroft/TuuzNet
+
 范例1，使用Websocket作为客户端链接到远程，这里以Shamrock（机器人）作为简单的Demo
 
 ```go
