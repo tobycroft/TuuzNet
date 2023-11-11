@@ -9,6 +9,7 @@ import (
 type WsData struct {
 	Conn    *websocket.Conn
 	Message []byte
+	Status  bool
 }
 
 var WsServer_ReadChannel = make(chan WsData, 1)
@@ -33,9 +34,10 @@ func (ws WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHea
 		if err != nil {
 			ws.err = err
 			log.Println("server-read-error:", err)
+			WsServer_ReadChannel <- WsData{Conn: ws.Conn, Message: message, Status: false}
 			return
 		}
-		WsServer_ReadChannel <- WsData{Conn: ws.Conn, Message: message}
+		WsServer_ReadChannel <- WsData{Conn: ws.Conn, Message: message, Status: true}
 	}
 }
 
