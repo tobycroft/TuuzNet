@@ -28,6 +28,9 @@ func (ws WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHea
 		return true
 	}
 	ws.Conn, ws.err = upd.Upgrade(w, r, responseHeader)
+	if ws.err != nil {
+		return
+	}
 	go ws.send_data()
 	for {
 		_, message, err := ws.Conn.ReadMessage()
