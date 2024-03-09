@@ -119,6 +119,9 @@ func (r *request) buildClient() *http.Client {
 
 // Set headers
 func (r *request) SetHeaders(headers map[string]string) *request {
+	if r.headers == nil {
+		r.headers = make(map[string]string)
+	}
 	if headers != nil || len(headers) > 0 {
 		for k, v := range headers {
 			r.headers[k] = v
