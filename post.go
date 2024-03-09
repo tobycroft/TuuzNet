@@ -2,6 +2,7 @@ package Net
 
 import (
 	"crypto/tls"
+	"time"
 )
 
 type Post struct {
@@ -9,13 +10,20 @@ type Post struct {
 	InsecureSkipVerify bool
 	ret                *response
 	err                error
+	Timeout            time.Duration
 }
 
+func (self Post) SetTimeOut(Timeout time.Duration) Post {
+	self.Timeout = Timeout
+	return self
+}
 func (self Post) PostRpc(url string, postData interface{}, username, password string) Post {
 	req := self.curl.NewRequest().request
 	self.curl.SetHeaderJson()
 	req.SetBasicAuth(username, password)
-	req.SetTimeout(5)
+	if self.Timeout != 0 {
+		req.SetTimeout(self.Timeout)
+	}
 	req.DisableKeepAlives(true)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.InsecureSkipVerify})
 	self.ret, self.err = req.post(url, postData)
@@ -25,7 +33,9 @@ func (self Post) PostRpc(url string, postData interface{}, username, password st
 func (self Post) PostRaw(url string, postData interface{}) Post {
 	req := self.curl.NewRequest().request
 	self.curl.SetHeaderTextPlain()
-	req.SetTimeout(5)
+	if self.Timeout != 0 {
+		req.SetTimeout(self.Timeout)
+	}
 	req.DisableKeepAlives(true)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.InsecureSkipVerify})
 	self.ret, self.err = req.post(url, postData)
@@ -37,7 +47,9 @@ func (self Post) PostFormData(url string, queries map[string]interface{}, postDa
 	self.curl.SetHeaderFormData()
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
-	req.SetTimeout(5)
+	if self.Timeout != 0 {
+		req.SetTimeout(self.Timeout)
+	}
 	req.DisableKeepAlives(true)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.InsecureSkipVerify})
 	url, self.err = buildUrl(url, queries)
@@ -53,7 +65,9 @@ func (self Post) PostUrlXEncode(url string, queries map[string]interface{}, post
 	//self.curl.SetHeaderUrlEncode()
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
-	req.SetTimeout(5)
+	if self.Timeout != 0 {
+		req.SetTimeout(self.Timeout)
+	}
 	req.DisableKeepAlives(true)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.InsecureSkipVerify})
 	url, self.err = buildUrl(url, queries)
@@ -69,7 +83,9 @@ func (self Post) PostJson(url string, queries map[string]interface{}, postData m
 	self.curl.SetHeaderJson()
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
-	req.SetTimeout(5)
+	if self.Timeout != 0 {
+		req.SetTimeout(self.Timeout)
+	}
 	req.DisableKeepAlives(true)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.InsecureSkipVerify})
 	url, self.err = buildUrl(url, queries)
