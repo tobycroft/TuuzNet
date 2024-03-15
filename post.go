@@ -70,7 +70,7 @@ func (self *Post) PostFormData(url string, queries map[string]interface{}, postD
 
 func (self *Post) PostUrlXEncode(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) *Post {
 	req := self.curl.NewRequest().request
-	//self.curl.SetHeaderUrlEncode()
+	self.curl.SetHeaderUrlEncode()
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
 	if self.Timeout != 0 {

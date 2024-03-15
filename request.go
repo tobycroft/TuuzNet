@@ -132,7 +132,6 @@ func (r *request) SetHeaders(headers map[string]string) *request {
 
 // Init headers
 func (r *request) initHeaders(req *http.Request) {
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	for k, v := range r.headers {
 		req.Header.Set(k, v)
 	}
