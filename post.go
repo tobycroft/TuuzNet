@@ -64,7 +64,7 @@ func (self *Post) PostFormData(url string, queries map[string]interface{}, postD
 	if self.err != nil {
 		return self
 	}
-	self.ret, self.err = req.post(url, postData)
+	self.ret, self.err = req.postFD(url, postData)
 	return self
 }
 

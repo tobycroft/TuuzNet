@@ -309,6 +309,9 @@ func (r *request) Get(url string, data ...interface{}) (*response, error) {
 func (r *request) post(url string, data ...interface{}) (*response, error) {
 	return r.request(http.MethodPost, url, data...)
 }
+func (r *request) postFD(url string, data ...interface{}) (*response, error) {
+	return r.requestFormData(http.MethodPost, url, data...)
+}
 
 // Put is a put http request
 func (r *request) Put(url string, data ...interface{}) (*response, error) {
@@ -372,6 +375,78 @@ func (r *request) request(method, url string, data ...interface{}) (*response, e
 		return nil, err
 	}
 
+	req, err = http.NewRequest(method, url, body)
+	if err != nil {
+		return nil, err
+	}
+
+	r.initHeaders(req)
+	r.initCookies(req)
+	r.initBasicAuth(req)
+
+	resp, err := r.cli.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	response.url = url
+	response.resp = resp
+
+	return response, nil
+}
+func (r *request) requestFormData(method, url string, data ...interface{}) (*response, error) {
+	// Build response
+	response := &response{}
+
+	// Start time
+	start := time.Now().UnixNano() / 1e6
+	// Count elapsed time
+	defer r.elapsedTime(start, response)
+
+	if method == "" || url == "" {
+		return nil, errors.New("parameter method and url is required")
+	}
+
+	// Debug infomation
+	defer r.log()
+
+	r.url = url
+	if len(data) > 0 {
+		r.data = data[0]
+	} else {
+		r.data = ""
+	}
+
+	var (
+		err  error
+		req  *http.Request
+		body io.Reader
+	)
+	r.cli = r.buildClient()
+
+	method = strings.ToUpper(method)
+	r.method = method
+
+	if method == "GET" || method == "DELETE" {
+		url, err = buildUrl(url, data...)
+		if err != nil {
+			return nil, err
+		}
+		r.url = url
+	}
+
+	var formdata bytes.Buffer
+	writer := multipart.NewWriter(&formdata)
+	switch data[0].(type) {
+	case map[string]string:
+		for i, v := range data[0].(map[string]string) {
+			writer.WriteField(i, v)
+		}
+		break
+
+	default:
+		return nil, errors.New("postform-should-be-map[string]string")
+	}
 	req, err = http.NewRequest(method, url, body)
 	if err != nil {
 		return nil, err
