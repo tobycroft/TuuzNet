@@ -50,7 +50,7 @@ func (self *Post) PostRaw(url string, postData interface{}) *Post {
 	return self
 }
 
-func (self *Post) PostFormData(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) *Post {
+func (self *Post) PostFormData(url string, queries map[string]interface{}, postData map[string]string, headers map[string]string, cookies map[string]string) *Post {
 	req := self.curl.NewRequest().request
 	self.curl.SetHeaderFormData()
 	req.SetHeaders(headers)
