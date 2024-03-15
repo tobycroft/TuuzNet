@@ -21,7 +21,7 @@ func (r *Curl) NewRequest() *Curl {
 	req.SetHeaders(map[string]string{})
 	req.SetCookies(map[string]string{})
 	req.Transport(transport)
-	r.request = req
+	r.request = &req
 	return r
 }
 

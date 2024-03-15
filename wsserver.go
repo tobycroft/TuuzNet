@@ -21,7 +21,7 @@ type WsServer struct {
 	Conn *websocket.Conn
 }
 
-func (ws WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHeader http.Header) {
+func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHeader http.Header) {
 	upd := websocket.Upgrader{}
 	upd.EnableCompression = false
 	upd.CheckOrigin = func(r *http.Request) bool {
@@ -44,7 +44,7 @@ func (ws WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHea
 	}
 }
 
-func (WsServer) send_data() {
+func (ws *WsServer) send_data() {
 	for c := range WsServer_WriteChannel {
 		err := c.Conn.WriteMessage(websocket.TextMessage, c.Message)
 		if err != nil {
