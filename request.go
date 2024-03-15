@@ -418,9 +418,9 @@ func (r *request) requestFormData(method, url string, data ...interface{}) (*res
 	}
 
 	var (
-		err  error
-		req  *http.Request
-		body io.Reader
+		err error
+		req *http.Request
+		//body io.Reader
 	)
 	r.cli = r.buildClient()
 
@@ -435,19 +435,22 @@ func (r *request) requestFormData(method, url string, data ...interface{}) (*res
 		r.url = url
 	}
 
-	var formdata bytes.Buffer
-	writer := multipart.NewWriter(&formdata)
+	formdata := &bytes.Buffer{}
+	bodyWriter := multipart.NewWriter(formdata)
 	switch data[0].(type) {
 	case map[string]string:
 		for i, v := range data[0].(map[string]string) {
-			writer.WriteField(i, v)
+			bodyWriter.WriteField(i, v)
 		}
 		break
 
 	default:
 		return nil, errors.New("postform-should-be-map[string]string")
 	}
-	req, err = http.NewRequest(method, url, body)
+	contentType := bodyWriter.FormDataContentType()
+	bodyWriter.Close()
+
+	req, err = http.NewRequest(method, url, formdata)
 	if err != nil {
 		return nil, err
 	}
@@ -455,6 +458,7 @@ func (r *request) requestFormData(method, url string, data ...interface{}) (*res
 	r.initHeaders(req)
 	r.initCookies(req)
 	r.initBasicAuth(req)
+	req.Header.Set("Content-Type", contentType)
 
 	resp, err := r.cli.Do(req)
 	if err != nil {
