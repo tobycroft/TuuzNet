@@ -13,11 +13,15 @@ type Post struct {
 	Timeout            time.Duration
 }
 
-func (self Post) SetTimeOut(Timeout time.Duration) Post {
+func (self Post) New() *Post {
+	return &self
+}
+
+func (self *Post) SetTimeOut(Timeout time.Duration) *Post {
 	self.Timeout = Timeout
 	return self
 }
-func (self Post) PostRpc(url string, postData interface{}, username, password string) Post {
+func (self *Post) PostRpc(url string, postData interface{}, username, password string) *Post {
 	req := self.curl.NewRequest().request
 	self.curl.SetHeaderJson()
 	req.SetBasicAuth(username, password)
@@ -30,7 +34,7 @@ func (self Post) PostRpc(url string, postData interface{}, username, password st
 	return self
 }
 
-func (self Post) PostRaw(url string, postData interface{}) Post {
+func (self *Post) PostRaw(url string, postData interface{}) *Post {
 	req := self.curl.NewRequest().request
 	self.curl.SetHeaderTextPlain()
 	if self.Timeout != 0 {
@@ -42,7 +46,7 @@ func (self Post) PostRaw(url string, postData interface{}) Post {
 	return self
 }
 
-func (self Post) PostFormData(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) Post {
+func (self *Post) PostFormData(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) *Post {
 	req := self.curl.NewRequest().request
 	self.curl.SetHeaderFormData()
 	req.SetHeaders(headers)
@@ -60,7 +64,7 @@ func (self Post) PostFormData(url string, queries map[string]interface{}, postDa
 	return self
 }
 
-func (self Post) PostUrlXEncode(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) Post {
+func (self *Post) PostUrlXEncode(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) *Post {
 	req := self.curl.NewRequest().request
 	//self.curl.SetHeaderUrlEncode()
 	req.SetHeaders(headers)
@@ -78,7 +82,7 @@ func (self Post) PostUrlXEncode(url string, queries map[string]interface{}, post
 	return self
 }
 
-func (self Post) PostJson(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) Post {
+func (self *Post) PostJson(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) *Post {
 	req := self.curl.NewRequest().request
 	self.curl.SetHeaderJson()
 	req.SetHeaders(headers)
@@ -96,28 +100,28 @@ func (self Post) PostJson(url string, queries map[string]interface{}, postData m
 	return self
 }
 
-func (self Post) RetCookie() (cookie map[string]interface{}, err error) {
+func (self *Post) RetCookie() (cookie map[string]interface{}, err error) {
 	if self.err != nil {
 		return nil, self.err
 	}
 	return self.curl.cookieHandler(self.ret.Cookies()), nil
 }
 
-func (self Post) RetString() (string, error) {
+func (self *Post) RetString() (string, error) {
 	if self.err != nil {
 		return "", self.err
 	}
 	return self.ret.bodystring()
 }
 
-func (self Post) RetBytes() ([]byte, error) {
+func (self *Post) RetBytes() ([]byte, error) {
 	if self.err != nil {
 		return nil, self.err
 	}
 	return self.ret.bodybytes()
 }
 
-func (self Post) RetJson(v any) error {
+func (self *Post) RetJson(v any) error {
 	if self.err != nil {
 		return self.err
 	}
