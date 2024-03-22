@@ -8,6 +8,7 @@ import (
 	"github.com/bytedance/sonic"
 	"io"
 	"mime/multipart"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -15,7 +16,17 @@ import (
 	"time"
 )
 
-func (r *Curl) NewRequest() *Curl {
+var dialer = &net.Dialer{
+	Timeout:   5 * time.Second,
+	KeepAlive: 0 * time.Second,
+	//DualStack: true,
+}
+var transport = &http.Transport{
+	DialContext:  dialer.DialContext,
+	MaxIdleConns: 100,
+}
+
+func (r *Curl) newRequest() *Curl {
 	req := request{}
 	req.SetTimeout(30)
 	req.SetHeaders(map[string]string{})

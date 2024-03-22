@@ -16,7 +16,7 @@ func (self Get) New() *Get {
 }
 
 func (self *Get) Get(url string, queries map[string]interface{}, headers map[string]string, cookies map[string]string) *Get {
-	req := self.curl.NewRequest().request
+	req := self.curl.newRequest().request
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
 	req.SetTimeout(5)

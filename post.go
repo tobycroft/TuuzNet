@@ -26,7 +26,7 @@ func (self *Post) AllowInsecure() *Post {
 	return self
 }
 func (self *Post) PostRpc(url string, postData interface{}, username, password string) *Post {
-	req := self.curl.NewRequest().request
+	req := self.curl.newRequest().request
 	self.curl.SetHeaderJson()
 	req.SetBasicAuth(username, password)
 	if self.Timeout != 0 {
@@ -39,7 +39,7 @@ func (self *Post) PostRpc(url string, postData interface{}, username, password s
 }
 
 func (self *Post) PostRaw(url string, postData interface{}) *Post {
-	req := self.curl.NewRequest().request
+	req := self.curl.newRequest().request
 	self.curl.SetHeaderTextPlain()
 	if self.Timeout != 0 {
 		req.SetTimeout(self.Timeout)
@@ -51,7 +51,7 @@ func (self *Post) PostRaw(url string, postData interface{}) *Post {
 }
 
 func (self *Post) PostFormData(url string, queries map[string]interface{}, postData map[string]string, headers map[string]string, cookies map[string]string) *Post {
-	req := self.curl.NewRequest().request
+	req := self.curl.newRequest().request
 	self.curl.SetHeaderFormData()
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
@@ -69,7 +69,7 @@ func (self *Post) PostFormData(url string, queries map[string]interface{}, postD
 }
 
 func (self *Post) PostUrlXEncode(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) *Post {
-	req := self.curl.NewRequest().request
+	req := self.curl.newRequest().request
 	self.curl.SetHeaderUrlEncode()
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
@@ -87,7 +87,7 @@ func (self *Post) PostUrlXEncode(url string, queries map[string]interface{}, pos
 }
 
 func (self *Post) PostJson(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) *Post {
-	req := self.curl.NewRequest().request
+	req := self.curl.newRequest().request
 	self.curl.SetHeaderJson()
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
