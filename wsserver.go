@@ -60,7 +60,7 @@ func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHe
 		case websocket.CloseMessage:
 			ws.Conn.Close()
 			WsServer_ReadChannel <- WsData{Conn: ws.Conn, Message: message, Status: false}
-			break
+			return
 
 		default:
 			break
