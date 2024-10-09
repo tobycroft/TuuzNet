@@ -48,20 +48,14 @@ func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHe
 	defer ws.Conn.Close()
 	for {
 		Type, message, err := ws.Conn.ReadMessage()
-		//if err != nil {
-		//	ws.err = err
-		//	WsServer_ReadChannel <- WsData{Conn: ws.Conn, Message: message, Status: false}
-		//	log.Println("server-read-error:", err)
-		//	return
-		//}
 		switch Type {
 
 		case websocket.TextMessage:
-			WsServer_ReadChannel <- WsData{Conn: ws.Conn, Message: message, Status: true}
+			WsServer_ReadChannel <- WsData{Conn: ws.Conn, Message: message, Type: Type, Status: true}
 			break
 
 		case websocket.BinaryMessage:
-			WsServer_ReadChannel <- WsData{Conn: ws.Conn, Message: message, Status: true}
+			WsServer_ReadChannel <- WsData{Conn: ws.Conn, Message: message, Type: Type, Status: true}
 			break
 
 		case websocket.PingMessage:
@@ -79,7 +73,8 @@ func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHe
 			break
 
 		case websocket.CloseMessage, -1:
-			WsServer_ReadChannel <- WsData{Conn: ws.Conn, Message: message, Status: false}
+			WsServer_WriteChannel <- WsData{Conn: ws.Conn, Message: message, Type: Type}
+			WsServer_ReadChannel <- WsData{Conn: ws.Conn, Message: message, Type: Type}
 			return
 
 		default:
@@ -96,27 +91,34 @@ func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHe
 func (ws *WsServer) send_data() {
 	for c := range WsServer_WriteChannel {
 		switch c.Type {
-		case websocket.TextMessage:
-			err := c.Conn.WriteMessage(websocket.TextMessage, c.Message)
+		case websocket.TextMessage, websocket.BinaryMessage:
+			err := c.Conn.WriteMessage(c.Type, c.Message)
 			if err != nil {
 				log.Println("server-send-error:", err)
 				return
 			}
 			break
 
-		case websocket.BinaryMessage:
-			err := c.Conn.WriteMessage(websocket.BinaryMessage, c.Message)
+		case websocket.PingMessage:
+			err := c.Conn.WriteMessage(websocket.PingMessage, []byte("ping"))
 			if err != nil {
-				log.Println("server-send-error:", err)
+				log.Println("server-ping-error:", err)
+				return
+			}
+			break
+
+		case websocket.PongMessage:
+			err := c.Conn.WriteMessage(websocket.PongMessage, []byte("pong"))
+			if err != nil {
+				log.Println("server-pong-error:", err)
 				return
 			}
 			break
 
 		case websocket.CloseMessage, -1:
-			err := c.Conn.WriteMessage(websocket.CloseMessage, c.Message)
+			err := c.Conn.WriteMessage(websocket.CloseMessage, []byte("close"))
 			if err != nil {
-				log.Println("server-send-error:", err)
-				return
+				log.Println("server-close-error:", err)
 			}
 			return
 
