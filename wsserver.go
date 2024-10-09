@@ -32,6 +32,7 @@ func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHe
 		return
 	}
 	go ws.send_data()
+	defer ws.Conn.Close()
 	for {
 		Type, message, err := ws.Conn.ReadMessage()
 		if err != nil {
@@ -58,7 +59,6 @@ func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHe
 			break
 
 		case websocket.CloseMessage:
-			ws.Conn.Close()
 			WsServer_ReadChannel <- WsData{Conn: ws.Conn, Message: message, Status: false}
 			return
 
