@@ -73,15 +73,23 @@ func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHe
 			break
 
 		case websocket.CloseMessage, -1:
-			select {
-			case <-time.After(1 * time.Second):
-				break
-			case WsServer_WriteChannel <- WsData{Conn: ws.Conn, Message: message, Type: Type}:
-				break
-			case WsServer_ReadChannel <- WsData{Conn: ws.Conn, Message: message, Type: Type}:
-				break
-			}
+			go func() {
+				select {
+				case <-time.After(1 * time.Second):
+					break
+				case WsServer_WriteChannel <- WsData{Conn: ws.Conn, Message: message, Type: Type}:
+					break
+				}
+			}()
 
+			go func() {
+				select {
+				case <-time.After(1 * time.Second):
+					break
+				case WsServer_ReadChannel <- WsData{Conn: ws.Conn, Message: message, Type: Type}:
+					break
+				}
+			}()
 			return
 
 		default:
