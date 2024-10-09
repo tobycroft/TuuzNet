@@ -79,6 +79,7 @@ func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHe
 			break
 
 		case websocket.CloseMessage, -1:
+			WsConns.Delete(ws.Conn.RemoteAddr().String())
 			go func() {
 				select {
 				case <-time.After(1 * time.Second):
@@ -100,6 +101,7 @@ func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHe
 
 		default:
 			if err != nil {
+				WsConns.Delete(ws.Conn.RemoteAddr().String())
 				log.Println("server-read-error:", err)
 				return
 			}
@@ -115,6 +117,7 @@ func (ws *WsServer) send_data() {
 		case websocket.TextMessage, websocket.BinaryMessage:
 			err := c.Conn.WriteMessage(c.Type, c.Message)
 			if err != nil {
+				WsConns.Delete(c.Conn.RemoteAddr().String())
 				log.Println("server-send-error:", err)
 				return
 			}
@@ -123,7 +126,6 @@ func (ws *WsServer) send_data() {
 			err := c.Conn.WriteMessage(websocket.PingMessage, []byte("ping"))
 			if err != nil {
 				log.Println("server-ping-error:", err)
-				return
 			}
 			break
 
@@ -131,13 +133,13 @@ func (ws *WsServer) send_data() {
 			err := c.Conn.WriteMessage(websocket.PongMessage, []byte("pong"))
 			if err != nil {
 				log.Println("server-pong-error:", err)
-				return
 			}
 			break
 
 		case websocket.CloseMessage, -1:
 			err := c.Conn.WriteMessage(websocket.CloseMessage, []byte("close"))
 			if err != nil {
+				WsConns.Delete(c.Conn.RemoteAddr().String())
 				log.Println("server-close-error:", err)
 			}
 			return
@@ -145,6 +147,7 @@ func (ws *WsServer) send_data() {
 		default:
 			err := c.Conn.WriteMessage(websocket.TextMessage, c.Message)
 			if err != nil {
+				WsConns.Delete(c.Conn.RemoteAddr().String())
 				log.Println("server-send-error:", err)
 				return
 			}
