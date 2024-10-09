@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -17,6 +18,8 @@ type WsData struct {
 var WsServer_ReadChannel = make(chan WsData, 1)
 var WsServer_WriteChannel = make(chan WsData, 1)
 
+var WsConns sync.Map
+
 type WsServer struct {
 	WsConfig *WsConfig
 	url      string
@@ -27,6 +30,7 @@ type WsServer struct {
 type WsConfig struct {
 	PingReplyDelayInMs uint
 	PongReplyDelayInMs uint
+	Compress           bool
 }
 
 func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHeader http.Header) {
@@ -35,8 +39,9 @@ func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHe
 			PingReplyDelayInMs: 10,
 		}
 	}
-	upd := websocket.Upgrader{}
-	upd.EnableCompression = false
+	upd := websocket.Upgrader{
+		EnableCompression: ws.WsConfig.Compress,
+	}
 	upd.CheckOrigin = func(r *http.Request) bool {
 		return true
 	}
@@ -46,6 +51,7 @@ func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHe
 	}
 	go ws.send_data()
 	defer ws.Conn.Close()
+	WsConns.Store(ws.Conn.RemoteAddr().String(), ws.Conn)
 	for {
 		Type, message, err := ws.Conn.ReadMessage()
 		switch Type {
