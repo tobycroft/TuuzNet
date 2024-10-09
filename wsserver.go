@@ -9,6 +9,7 @@ import (
 
 type WsData struct {
 	Conn    *websocket.Conn
+	Type    int
 	Message []byte
 	Status  bool
 }
@@ -29,8 +30,10 @@ type WsConfig struct {
 }
 
 func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHeader http.Header) {
-	if ws.WsConfig.PingReplyDelayInMs == 0 {
-		ws.WsConfig.PingReplyDelayInMs = 10
+	if ws.WsConfig == nil {
+		ws.WsConfig = &WsConfig{
+			PingReplyDelayInMs: 10,
+		}
 	}
 	upd := websocket.Upgrader{}
 	upd.EnableCompression = false
@@ -45,13 +48,14 @@ func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHe
 	defer ws.Conn.Close()
 	for {
 		Type, message, err := ws.Conn.ReadMessage()
-		if err != nil {
-			ws.err = err
-			WsServer_ReadChannel <- WsData{Conn: ws.Conn, Message: message, Status: false}
-			log.Println("server-read-error:", err)
-			return
-		}
+		//if err != nil {
+		//	ws.err = err
+		//	WsServer_ReadChannel <- WsData{Conn: ws.Conn, Message: message, Status: false}
+		//	log.Println("server-read-error:", err)
+		//	return
+		//}
 		switch Type {
+
 		case websocket.TextMessage:
 			WsServer_ReadChannel <- WsData{Conn: ws.Conn, Message: message, Status: true}
 			break
@@ -74,11 +78,15 @@ func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHe
 			}()
 			break
 
-		case websocket.CloseMessage:
+		case websocket.CloseMessage, -1:
 			WsServer_ReadChannel <- WsData{Conn: ws.Conn, Message: message, Status: false}
 			return
 
 		default:
+			if err != nil {
+				log.Println("server-read-error:", err)
+				return
+			}
 			break
 		}
 
@@ -87,10 +95,34 @@ func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHe
 
 func (ws *WsServer) send_data() {
 	for c := range WsServer_WriteChannel {
-		err := c.Conn.WriteMessage(websocket.TextMessage, c.Message)
-		if err != nil {
-			log.Println("server-send-error:", err)
+		switch c.Type {
+		case websocket.TextMessage:
+			err := c.Conn.WriteMessage(websocket.TextMessage, c.Message)
+			if err != nil {
+				log.Println("server-send-error:", err)
+				return
+			}
+			break
+
+		case websocket.BinaryMessage:
+			err := c.Conn.WriteMessage(websocket.BinaryMessage, c.Message)
+			if err != nil {
+				log.Println("server-send-error:", err)
+				return
+			}
+			break
+
+		case websocket.CloseMessage, -1:
+			err := c.Conn.WriteMessage(websocket.CloseMessage, c.Message)
+			if err != nil {
+				log.Println("server-send-error:", err)
+				return
+			}
 			return
+
+		default:
+			break
 		}
+
 	}
 }
