@@ -140,7 +140,7 @@ func (ws *WsServer) send_data() {
 			err := c.Conn.WriteMessage(websocket.CloseMessage, []byte("close"))
 			if err != nil {
 				WsConns.Delete(c.Conn.RemoteAddr().String())
-				log.Println("server-close-error:", err)
+				//log.Println("server-close-error:", err)
 			}
 			return
 
