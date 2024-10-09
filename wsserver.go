@@ -106,6 +106,13 @@ func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHe
 func (ws *WsServer) send_data() {
 	for c := range WsServer_WriteChannel {
 		switch c.Type {
+		case websocket.TextMessage, websocket.BinaryMessage:
+			err := c.Conn.WriteMessage(c.Type, c.Message)
+			if err != nil {
+				log.Println("server-send-error:", err)
+				return
+			}
+
 		case websocket.PingMessage:
 			err := c.Conn.WriteMessage(websocket.PingMessage, []byte("ping"))
 			if err != nil {
@@ -130,7 +137,7 @@ func (ws *WsServer) send_data() {
 			return
 
 		default:
-			err := c.Conn.WriteMessage(c.Type, c.Message)
+			err := c.Conn.WriteMessage(websocket.TextMessage, c.Message)
 			if err != nil {
 				log.Println("server-send-error:", err)
 				return
