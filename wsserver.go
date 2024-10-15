@@ -53,7 +53,7 @@ func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHe
 	go ws.send_data()
 	defer ws.Conn.Close()
 	WsConns.Store(ws.Conn.RemoteAddr().String(), ws.Conn)
-	wsLock.Store(ws.Conn.RemoteAddr().String(), sync.Mutex{})
+	wsLock.Store(ws.Conn.RemoteAddr().String(), &sync.Mutex{})
 	for {
 		Type, message, err := ws.Conn.ReadMessage()
 		switch Type {
