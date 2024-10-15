@@ -19,6 +19,7 @@ var WsServer_ReadChannel = make(chan WsData, 1)
 var WsServer_WriteChannel = make(chan WsData, 1)
 
 var WsConns sync.Map
+var wsLock sync.Map
 
 type WsServer struct {
 	WsConfig *WsConfig
@@ -52,6 +53,7 @@ func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHe
 	go ws.send_data()
 	defer ws.Conn.Close()
 	WsConns.Store(ws.Conn.RemoteAddr().String(), ws.Conn)
+	wsLock.Store(ws.Conn.RemoteAddr().String(), sync.Mutex{})
 	for {
 		Type, message, err := ws.Conn.ReadMessage()
 		switch Type {
@@ -80,6 +82,7 @@ func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHe
 
 		case websocket.CloseMessage, -1:
 			WsConns.Delete(ws.Conn.RemoteAddr().String())
+			wsLock.Delete(ws.Conn.RemoteAddr().String())
 			go func() {
 				select {
 				case <-time.After(1 * time.Second):
@@ -102,6 +105,7 @@ func (ws *WsServer) NewServer(w http.ResponseWriter, r *http.Request, responseHe
 		default:
 			if err != nil {
 				WsConns.Delete(ws.Conn.RemoteAddr().String())
+				wsLock.Delete(ws.Conn.RemoteAddr().String())
 				log.Println("server-read-error:", err)
 				return
 			}
@@ -115,41 +119,70 @@ func (ws *WsServer) send_data() {
 	for c := range WsServer_WriteChannel {
 		switch c.Type {
 		case websocket.TextMessage, websocket.BinaryMessage:
-			err := c.Conn.WriteMessage(c.Type, c.Message)
-			if err != nil {
-				WsConns.Delete(c.Conn.RemoteAddr().String())
-				log.Println("server-send-error:", err)
-				return
+			lock, ok := wsLock.Load(c.Conn.RemoteAddr().String())
+			if ok {
+				lock.(*sync.Mutex).Lock()
+				err := c.Conn.WriteMessage(c.Type, c.Message)
+				lock.(*sync.Mutex).Unlock()
+				if err != nil {
+					WsConns.Delete(c.Conn.RemoteAddr().String())
+					wsLock.Delete(c.Conn.RemoteAddr().String())
+					log.Println("server-send-error:", err)
+					return
+				}
 			}
+			break
 
 		case websocket.PingMessage:
-			err := c.Conn.WriteMessage(websocket.PingMessage, []byte("ping"))
-			if err != nil {
-				log.Println("server-ping-error:", err)
+			lock, ok := wsLock.Load(c.Conn.RemoteAddr().String())
+			if ok {
+				lock.(*sync.Mutex).Lock()
+				err := c.Conn.WriteMessage(websocket.PingMessage, []byte("ping"))
+				lock.(*sync.Mutex).Unlock()
+				if err != nil {
+					log.Println("server-ping-error:", err)
+				}
 			}
 			break
 
 		case websocket.PongMessage:
-			err := c.Conn.WriteMessage(websocket.PongMessage, []byte("pong"))
-			if err != nil {
-				log.Println("server-pong-error:", err)
+			lock, ok := wsLock.Load(c.Conn.RemoteAddr().String())
+			if ok {
+				lock.(*sync.Mutex).Lock()
+				err := c.Conn.WriteMessage(websocket.PongMessage, []byte("pong"))
+				lock.(*sync.Mutex).Unlock()
+				if err != nil {
+					log.Println("server-pong-error:", err)
+				}
 			}
 			break
 
 		case websocket.CloseMessage, -1:
-			err := c.Conn.WriteMessage(websocket.CloseMessage, []byte("close"))
-			if err != nil {
-				WsConns.Delete(c.Conn.RemoteAddr().String())
-				//log.Println("server-close-error:", err)
+			lock, ok := wsLock.Load(c.Conn.RemoteAddr().String())
+			if ok {
+				lock.(*sync.Mutex).Lock()
+				err := c.Conn.WriteMessage(websocket.CloseMessage, []byte("close"))
+				lock.(*sync.Mutex).Unlock()
+				if err != nil {
+					WsConns.Delete(c.Conn.RemoteAddr().String())
+					wsLock.Delete(c.Conn.RemoteAddr().String())
+					//log.Println("server-close-error:", err)
+				}
 			}
 			return
 
 		default:
-			err := c.Conn.WriteMessage(websocket.TextMessage, c.Message)
-			if err != nil {
-				WsConns.Delete(c.Conn.RemoteAddr().String())
-				log.Println("server-send-error:", err)
-				return
+			lock, ok := wsLock.Load(c.Conn.RemoteAddr().String())
+			if ok {
+				lock.(*sync.Mutex).Lock()
+				err := c.Conn.WriteMessage(websocket.TextMessage, c.Message)
+				lock.(*sync.Mutex).Unlock()
+				if err != nil {
+					WsConns.Delete(c.Conn.RemoteAddr().String())
+					wsLock.Delete(c.Conn.RemoteAddr().String())
+					log.Println("server-send-error:", err)
+					return
+				}
 			}
 			break
 		}
