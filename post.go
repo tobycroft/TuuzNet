@@ -68,7 +68,7 @@ func (self *Post) PostFormData(url string, queries map[string]interface{}, postD
 	return self
 }
 
-func (self *Post) PostFormData2(url string, queries map[string]interface{}, postData map[string]any, headers map[string]string, cookies map[string]string) *Post {
+func (self *Post) PostFormDataAny(url string, queries map[string]interface{}, postData map[string]any, headers map[string]string, cookies map[string]string) *Post {
 	req := self.curl.newRequest().request
 	self.curl.SetHeaderFormData()
 	req.SetHeaders(headers)
