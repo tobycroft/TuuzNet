@@ -68,6 +68,24 @@ func (self *Post) PostFormData(url string, queries map[string]interface{}, postD
 	return self
 }
 
+func (self *Post) PostFormData2(url string, queries map[string]interface{}, postData map[string]any, headers map[string]string, cookies map[string]string) *Post {
+	req := self.curl.newRequest().request
+	self.curl.SetHeaderFormData()
+	req.SetHeaders(headers)
+	req.SetCookies(cookies)
+	if self.Timeout != 0 {
+		req.SetTimeout(self.Timeout)
+	}
+	req.DisableKeepAlives(true)
+	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.InsecureSkipVerify})
+	url, self.err = buildUrl(url, queries)
+	if self.err != nil {
+		return self
+	}
+	self.ret, self.err = req.postFD(url, postData)
+	return self
+}
+
 func (self *Post) PostUrlXEncode(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) *Post {
 	req := self.curl.newRequest().request
 	self.curl.SetHeaderUrlEncode()

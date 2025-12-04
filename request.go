@@ -5,7 +5,6 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
-	"github.com/bytedance/sonic"
 	"io"
 	"mime/multipart"
 	"net"
@@ -14,6 +13,9 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/bytedance/sonic"
+	"github.com/tobycroft/Calc"
 )
 
 var dialer = &net.Dialer{
@@ -451,12 +453,24 @@ func (r *request) requestFormData(method, url string, data ...interface{}) (*res
 	switch data[0].(type) {
 	case map[string]string:
 		for i, v := range data[0].(map[string]string) {
-			bodyWriter.WriteField(i, v)
+			err := bodyWriter.WriteField(i, v)
+			if err != nil {
+				return nil, err
+			}
 		}
 		break
 
+	case map[string]any:
+		for i, v := range data[0].(map[string]any) {
+			err := bodyWriter.WriteField(i, Calc.Any2String(v))
+			if err != nil {
+				return nil, err
+			}
+
+		}
+
 	default:
-		return nil, errors.New("postform-should-be-map[string]string")
+		return nil, errors.New("postform-should-be-map[string]string-or-map[string]any")
 	}
 	contentType := bodyWriter.FormDataContentType()
 	bodyWriter.Close()
