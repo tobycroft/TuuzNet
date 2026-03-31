@@ -4,6 +4,8 @@ import (
 	"crypto/tls"
 	"net/http"
 	"net/url"
+
+	"golang.org/x/net/proxy"
 )
 
 type Get struct {
@@ -25,6 +27,11 @@ func (self *Get) Get(url string, queries map[string]interface{}, headers map[str
 	req.DisableKeepAlives(true)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.InsecureSkipVerify})
 	self.ret, self.err = req.Get(url, queries)
+	return self
+}
+
+func (self *Get) ProxySocks5(tcpudp, addr string, proxyauth *proxy.Auth) *Get {
+	self.curl.request.ProxySocks5(tcpudp, addr, proxyauth)
 	return self
 }
 

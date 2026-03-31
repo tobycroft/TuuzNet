@@ -2,10 +2,12 @@ package Net
 
 import (
 	"bytes"
+	"context"
 	"crypto/tls"
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"mime/multipart"
 	"net"
 	"net/http"
@@ -16,16 +18,19 @@ import (
 
 	"github.com/bytedance/sonic"
 	"github.com/tobycroft/Calc"
+	"golang.org/x/net/proxy"
 )
 
 var dialer = &net.Dialer{
 	Timeout:   5 * time.Second,
 	KeepAlive: 0 * time.Second,
 	//DualStack: true,
+
 }
 var transport = &http.Transport{
-	DialContext:  dialer.DialContext,
+	//DialContext:  dialer.DialContext,
 	MaxIdleConns: 100,
+	Dial:         dialer.Dial,
 }
 
 func (r *Curl) newRequest() *Curl {
@@ -55,6 +60,7 @@ type request struct {
 	tlsClientConfig   *tls.Config
 	jar               http.CookieJar
 	proxy             func(*http.Request) (*url.URL, error)
+	dialer            func(ctx context.Context, network, addr string) (net.Conn, error)
 	checkRedirect     func(req *http.Request, via []*http.Request) error
 }
 
@@ -87,6 +93,16 @@ func (r *request) Proxy(v func(*http.Request) (*url.URL, error)) *request {
 	return r
 }
 
+func (r *request) ProxySocks5(network, addr string, proxyAUTH *proxy.Auth) *request {
+	dailer, err := proxy.SOCKS5(network, addr, proxyAUTH, proxy.Direct)
+	if err != nil {
+		log.Println("ProxyErr:", err)
+		return r
+	}
+	transport.Dial = dailer.Dial
+	return r
+}
+
 func (r *request) Transport(v *http.Transport) *request {
 	r.transport = v
 	return r
@@ -112,6 +128,10 @@ func (r *request) getTransport() http.RoundTripper {
 
 	if r.proxy != nil {
 		r.transport.Proxy = r.proxy
+	}
+
+	if r.dialer != nil {
+		r.transport.DialContext = r.dialer
 	}
 
 	return http.RoundTripper(r.transport)

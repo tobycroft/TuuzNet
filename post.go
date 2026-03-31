@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+
+	"golang.org/x/net/proxy"
 )
 
 type Post struct {
@@ -26,6 +28,11 @@ func (self *Post) Proxy(proxyUrl string) *Post {
 		return self
 	}
 	self.curl.request.Proxy(http.ProxyURL(purl))
+	return self
+}
+
+func (self *Post) ProxySocks5(tcpudp, addr string, proxyauth *proxy.Auth) *Post {
+	self.curl.request.ProxySocks5(tcpudp, addr, proxyauth)
 	return self
 }
 
