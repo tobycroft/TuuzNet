@@ -16,7 +16,10 @@ type Get struct {
 	DisableKeepAlives  bool
 }
 
-func (self Get) New() *Get {
+func (self Get) New(debug_leftAsFalse ...bool) *Get {
+	if debug_leftAsFalse != nil {
+		self.curl.request.debug = true
+	}
 	return &self
 }
 

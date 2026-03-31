@@ -18,7 +18,10 @@ type Post struct {
 	DisableKeepAlives  bool
 }
 
-func (self Post) New() *Post {
+func (self Post) New(debug_default_false ...bool) *Post {
+	if debug_default_false != nil {
+		self.curl.request.debug = true
+	}
 	return &self
 }
 
