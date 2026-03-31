@@ -2,6 +2,8 @@ package Net
 
 import (
 	"crypto/tls"
+	"net/http"
+	"net/url"
 )
 
 type Get struct {
@@ -23,6 +25,16 @@ func (self *Get) Get(url string, queries map[string]interface{}, headers map[str
 	req.DisableKeepAlives(true)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.InsecureSkipVerify})
 	self.ret, self.err = req.Get(url, queries)
+	return self
+}
+
+func (self *Get) Proxy(proxyUrl string) *Get {
+	purl, err := url.Parse(proxyUrl)
+	if err != nil {
+		self.err = err
+		return self
+	}
+	self.curl.request.Proxy(http.ProxyURL(purl))
 	return self
 }
 

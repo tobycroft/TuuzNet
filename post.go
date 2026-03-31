@@ -2,6 +2,8 @@ package Net
 
 import (
 	"crypto/tls"
+	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -15,6 +17,16 @@ type Post struct {
 
 func (self Post) New() *Post {
 	return &self
+}
+
+func (self *Post) Proxy(proxyUrl string) *Post {
+	purl, err := url.Parse(proxyUrl)
+	if err != nil {
+		self.err = err
+		return self
+	}
+	self.curl.request.Proxy(http.ProxyURL(purl))
+	return self
 }
 
 func (self *Post) SetTimeOut(Timeout time.Duration) *Post {
