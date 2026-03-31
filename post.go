@@ -31,11 +31,14 @@ func (self *Post) Proxy(proxyUrl string) *Post {
 	return self
 }
 
+// proxy by socks5 is dont by golang proxy module, data passthough the dail function
+// to achieve this the dial function is changed from DialContext to Dial
 func (self *Post) ProxySocks5(tcpudp, addr string, proxyauth *proxy.Auth) *Post {
 	self.curl.request.ProxySocks5(tcpudp, addr, proxyauth)
 	return self
 }
 
+// this proxy method is done by http.request itself
 func (self *Post) SetTimeOut(Timeout time.Duration) *Post {
 	self.Timeout = Timeout
 	return self
