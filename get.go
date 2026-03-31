@@ -20,7 +20,7 @@ func (self Get) New() *Get {
 	return &self
 }
 
-func (self *Get) Get(url string, queries map[string]any, headers map[string]string, cookies map[string]string) *Get {
+func (self *Get) Get(url string, queries map[string]any, headers map[string]string, cookies map[string]string) *Ret {
 	req := self.curl.newRequest().request
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
@@ -28,7 +28,7 @@ func (self *Get) Get(url string, queries map[string]any, headers map[string]stri
 	req.DisableKeepAlives(self.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.InsecureSkipVerify})
 	self.ret, self.err = req.Get(url, queries)
-	return self
+	return &Ret{&self.curl, self.ret, self.err}
 }
 
 // proxy by socks5 is dont by golang proxy module
@@ -46,32 +46,4 @@ func (self *Get) ProxyHttp(proxyUrl string) *Get {
 	}
 	self.curl.request.Proxy(http.ProxyURL(purl))
 	return self
-}
-
-func (self *Get) RetCookie() (cookie map[string]interface{}, err error) {
-	if self.err != nil {
-		return nil, self.err
-	}
-	return self.curl.cookieHandler(self.ret.Cookies()), nil
-}
-
-func (self *Get) RetString() (string, error) {
-	if self.err != nil {
-		return "", self.err
-	}
-	return self.ret.bodystring()
-}
-
-func (self *Get) RetBytes() ([]byte, error) {
-	if self.err != nil {
-		return nil, self.err
-	}
-	return self.ret.bodybytes()
-}
-
-func (self *Get) RetJson(v any) error {
-	if self.err != nil {
-		return self.err
-	}
-	return self.ret.bodyjson(v)
 }

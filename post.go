@@ -15,6 +15,7 @@ type Post struct {
 	ret                *response
 	err                error
 	Timeout            time.Duration
+	DisableKeepAlives  bool
 }
 
 func (self Post) New() *Post {
@@ -55,7 +56,7 @@ func (self *Post) PostRpc(url string, postData interface{}, username, password s
 	if self.Timeout != 0 {
 		req.SetTimeout(self.Timeout)
 	}
-	req.DisableKeepAlives(true)
+	req.DisableKeepAlives(self.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.InsecureSkipVerify})
 	self.ret, self.err = req.post(url, postData)
 	return &Ret{&self.curl, self.ret, self.err}
@@ -67,7 +68,7 @@ func (self *Post) PostRaw(url string, postData interface{}) *Ret {
 	if self.Timeout != 0 {
 		req.SetTimeout(self.Timeout)
 	}
-	req.DisableKeepAlives(true)
+	req.DisableKeepAlives(self.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.InsecureSkipVerify})
 	self.ret, self.err = req.post(url, postData)
 	return &Ret{&self.curl, self.ret, self.err}
@@ -81,7 +82,7 @@ func (self *Post) PostFormData(url string, queries map[string]interface{}, postD
 	if self.Timeout != 0 {
 		req.SetTimeout(self.Timeout)
 	}
-	req.DisableKeepAlives(true)
+	req.DisableKeepAlives(self.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.InsecureSkipVerify})
 	url, self.err = buildUrl(url, queries)
 	if self.err != nil {
@@ -99,7 +100,7 @@ func (self *Post) PostFormDataAny(url string, queries map[string]interface{}, po
 	if self.Timeout != 0 {
 		req.SetTimeout(self.Timeout)
 	}
-	req.DisableKeepAlives(true)
+	req.DisableKeepAlives(self.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.InsecureSkipVerify})
 	url, self.err = buildUrl(url, queries)
 	if self.err != nil {
@@ -117,7 +118,7 @@ func (self *Post) PostUrlXEncode(url string, queries map[string]interface{}, pos
 	if self.Timeout != 0 {
 		req.SetTimeout(self.Timeout)
 	}
-	req.DisableKeepAlives(true)
+	req.DisableKeepAlives(self.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.InsecureSkipVerify})
 	url, self.err = buildUrl(url, queries)
 	if self.err != nil {
@@ -135,7 +136,7 @@ func (self *Post) PostJson(url string, queries map[string]interface{}, postData 
 	if self.Timeout != 0 {
 		req.SetTimeout(self.Timeout)
 	}
-	req.DisableKeepAlives(true)
+	req.DisableKeepAlives(self.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.InsecureSkipVerify})
 	url, self.err = buildUrl(url, queries)
 	if self.err != nil {

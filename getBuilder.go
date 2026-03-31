@@ -2,7 +2,11 @@ package Net
 
 import (
 	"crypto/tls"
+	"net/http"
+	"net/url"
 	"time"
+
+	"golang.org/x/net/proxy"
 )
 
 type GetBuilder struct {
@@ -18,6 +22,23 @@ func (self GetBuilder) New() *GetBuilder {
 	self.Get = new(Get)
 	self.setTimeOut = 5
 	return &self
+}
+
+// proxy by socks5 is dont by golang proxy module
+func (self *GetBuilder) ProxySocks5(tcpudp, addr string, proxyauth *proxy.Auth) *GetBuilder {
+	self.Get.curl.request.ProxySocks5(tcpudp, addr, proxyauth)
+	return self
+}
+
+// this proxy method is done by http.request itself
+func (self *GetBuilder) ProxyHttp(proxyUrl string) *GetBuilder {
+	purl, err := url.Parse(proxyUrl)
+	if err != nil {
+		self.Get.err = err
+		return self
+	}
+	self.Get.curl.request.Proxy(http.ProxyURL(purl))
+	return self
 }
 
 func (self *GetBuilder) SetUrl(url string) *GetBuilder {
@@ -55,7 +76,7 @@ func (self *GetBuilder) DisableKeepAlives() *GetBuilder {
 	return self
 }
 
-func (self *GetBuilder) SendGet() *Get {
+func (self *GetBuilder) SendGet() *Ret {
 	req := self.Get.curl.newRequest().request
 	req.SetHeaders(self.header)
 	req.SetCookies(self.cookies)
@@ -63,5 +84,5 @@ func (self *GetBuilder) SendGet() *Get {
 	req.DisableKeepAlives(self.Get.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.Get.InsecureSkipVerify})
 	self.Get.ret, self.Get.err = req.Get(self.url, self.query)
-	return self.Get
+	return &Ret{&self.Get.curl, self.Get.ret, self.Get.err}
 }
