@@ -31,8 +31,7 @@ func (self *Post) Proxy(proxyUrl string) *Post {
 	return self
 }
 
-// proxy by socks5 is dont by golang proxy module, data passthough the dail function
-// to achieve this the dial function is changed from DialContext to Dial
+// proxy by socks5 is dont by golang proxy module
 func (self *Post) ProxySocks5(tcpudp, addr string, proxyauth *proxy.Auth) *Post {
 	self.curl.request.ProxySocks5(tcpudp, addr, proxyauth)
 	return self

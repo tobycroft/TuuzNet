@@ -30,8 +30,7 @@ func (self *Get) Get(url string, queries map[string]interface{}, headers map[str
 	return self
 }
 
-// proxy by socks5 is dont by golang proxy module, data passthough the dail function
-// to achieve this the dial function is changed from DialContext to Dial
+// proxy by socks5 is dont by golang proxy module
 func (self *Get) ProxySocks5(tcpudp, addr string, proxyauth *proxy.Auth) *Get {
 	self.curl.request.ProxySocks5(tcpudp, addr, proxyauth)
 	return self

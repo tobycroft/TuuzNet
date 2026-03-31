@@ -28,9 +28,9 @@ var dialer = &net.Dialer{
 
 }
 var transport = &http.Transport{
-	//DialContext:  dialer.DialContext,
+	DialContext:  dialer.DialContext,
 	MaxIdleConns: 100,
-	Dial:         dialer.Dial,
+	//Dial:         dialer.Dial,
 }
 
 func (r *Curl) newRequest() *Curl {
@@ -94,12 +94,14 @@ func (r *request) Proxy(v func(*http.Request) (*url.URL, error)) *request {
 }
 
 func (r *request) ProxySocks5(network, addr string, proxyAUTH *proxy.Auth) *request {
-	dailer, err := proxy.SOCKS5(network, addr, proxyAUTH, proxy.Direct)
+	dl, err := proxy.SOCKS5(network, addr, proxyAUTH, proxy.Direct)
 	if err != nil {
 		log.Println("ProxyErr:", err)
 		return r
 	}
-	transport.Dial = dailer.Dial
+	transport.DialContext = func(ctx context.Context, network, addr string) (net.Conn, error) {
+		return dl.Dial(network, addr)
+	}
 	return r
 }
 
