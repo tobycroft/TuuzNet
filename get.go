@@ -13,6 +13,7 @@ type Get struct {
 	InsecureSkipVerify bool
 	ret                *response
 	err                error
+	DisableKeepAlives  bool
 }
 
 func (self Get) New() *Get {
@@ -24,7 +25,7 @@ func (self *Get) Get(url string, queries map[string]any, headers map[string]stri
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
 	req.SetTimeout(5)
-	req.DisableKeepAlives(true)
+	req.DisableKeepAlives(self.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.InsecureSkipVerify})
 	self.ret, self.err = req.Get(url, queries)
 	return self

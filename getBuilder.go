@@ -45,12 +45,22 @@ func (self *GetBuilder) SetTimeOut(timeOut time.Duration) *GetBuilder {
 	return self
 }
 
+func (self *GetBuilder) AllowInsecure() *GetBuilder {
+	self.Get.InsecureSkipVerify = true
+	return self
+}
+
+func (self *GetBuilder) DisableKeepAlives() *GetBuilder {
+	self.Get.DisableKeepAlives = true
+	return self
+}
+
 func (self *GetBuilder) SendGet() *Get {
 	req := self.Get.curl.newRequest().request
 	req.SetHeaders(self.header)
 	req.SetCookies(self.cookies)
 	req.SetTimeout(self.setTimeOut)
-	req.DisableKeepAlives(true)
+	req.DisableKeepAlives(self.Get.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.Get.InsecureSkipVerify})
 	self.Get.ret, self.Get.err = req.Get(self.url, self.query)
 	return self.Get

@@ -42,10 +42,12 @@ func (self *Post) SetTimeOut(Timeout time.Duration) *Post {
 	self.Timeout = Timeout
 	return self
 }
+
 func (self *Post) AllowInsecure() *Post {
 	self.InsecureSkipVerify = true
 	return self
 }
+
 func (self *Post) PostRpc(url string, postData interface{}, username, password string) *Post {
 	req := self.curl.newRequest().request
 	self.curl.SetHeaderJson()
