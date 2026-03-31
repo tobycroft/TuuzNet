@@ -81,7 +81,7 @@ func (self *PostBuilder) DisableKeepAlives() *PostBuilder {
 	return self
 }
 
-func (self *PostBuilder) Send(url string, postData interface{}, username, password string) *Ret {
+func (self *PostBuilder) SendRPC(username, password string) *Ret {
 	req := self.Post.curl.newRequest().request
 	self.Post.curl.SetHeaderJson()
 	req.SetBasicAuth(username, password)
@@ -90,11 +90,12 @@ func (self *PostBuilder) Send(url string, postData interface{}, username, passwo
 	}
 	req.DisableKeepAlives(self.Post.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.Post.InsecureSkipVerify})
-	self.Post.ret, self.Post.err = req.post(url, postData)
+	self.url, self.Post.err = buildUrl(self.url, self.query)
+	self.Post.ret, self.Post.err = req.post(self.url, self.postData)
 	return &Ret{&self.Post.curl, self.Post.ret, self.Post.err}
 }
 
-func (self *PostBuilder) PostRaw(url string, postData interface{}) *Ret {
+func (self *PostBuilder) SendRAW(postData interface{}) *Ret {
 	req := self.Post.curl.newRequest().request
 	self.Post.curl.SetHeaderTextPlain()
 	if self.setTimeOut != 0 {
@@ -102,78 +103,78 @@ func (self *PostBuilder) PostRaw(url string, postData interface{}) *Ret {
 	}
 	req.DisableKeepAlives(self.Post.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.Post.InsecureSkipVerify})
-	self.Post.ret, self.Post.err = req.post(url, postData)
+	self.Post.ret, self.Post.err = req.post(self.url, postData)
 	return &Ret{&self.Post.curl, self.Post.ret, self.Post.err}
 }
 
-func (self *PostBuilder) PostFormData(url string, queries map[string]interface{}, postData map[string]string, headers map[string]string, cookies map[string]string) *Ret {
+func (self *PostBuilder) SendFormData() *Ret {
 	req := self.Post.curl.newRequest().request
 	self.Post.curl.SetHeaderFormData()
-	req.SetHeaders(headers)
-	req.SetCookies(cookies)
+	req.SetHeaders(self.header)
+	req.SetCookies(self.cookies)
 	if self.setTimeOut != 0 {
 		req.SetTimeout(self.setTimeOut)
 	}
 	req.DisableKeepAlives(self.Post.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.Post.InsecureSkipVerify})
-	url, self.Post.err = buildUrl(url, queries)
+	self.url, self.Post.err = buildUrl(self.url, self.query)
 	if self.Post.err != nil {
 		return &Ret{&self.Post.curl, self.Post.ret, self.Post.err}
 	}
-	self.Post.ret, self.Post.err = req.postFD(url, postData)
+	self.Post.ret, self.Post.err = req.postFD(self.url, self.postData)
 	return &Ret{&self.Post.curl, self.Post.ret, self.Post.err}
 }
 
-func (self *PostBuilder) PostFormDataAny(url string, queries map[string]interface{}, postData map[string]any, headers map[string]string, cookies map[string]string) *Ret {
+func (self *PostBuilder) PostFormDataAny() *Ret {
 	req := self.Post.curl.newRequest().request
 	self.Post.curl.SetHeaderFormData()
-	req.SetHeaders(headers)
-	req.SetCookies(cookies)
+	req.SetHeaders(self.header)
+	req.SetCookies(self.cookies)
 	if self.setTimeOut != 0 {
 		req.SetTimeout(self.setTimeOut)
 	}
 	req.DisableKeepAlives(self.Post.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.Post.InsecureSkipVerify})
-	url, self.Post.err = buildUrl(url, queries)
+	self.url, self.Post.err = buildUrl(self.url, self.query)
 	if self.Post.err != nil {
 		return &Ret{&self.Post.curl, self.Post.ret, self.Post.err}
 	}
-	self.Post.ret, self.Post.err = req.postFD(url, postData)
+	self.Post.ret, self.Post.err = req.postFD(self.url, self.postData)
 	return &Ret{&self.Post.curl, self.Post.ret, self.Post.err}
 }
 
-func (self *PostBuilder) PostUrlXEncode(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) *Ret {
+func (self *PostBuilder) PostUrlXEncode() *Ret {
 	req := self.Post.curl.newRequest().request
 	self.Post.curl.SetHeaderUrlEncode()
-	req.SetHeaders(headers)
-	req.SetCookies(cookies)
+	req.SetHeaders(self.header)
+	req.SetCookies(self.cookies)
 	if self.setTimeOut != 0 {
 		req.SetTimeout(self.setTimeOut)
 	}
 	req.DisableKeepAlives(self.Post.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.Post.InsecureSkipVerify})
-	url, self.Post.err = buildUrl(url, queries)
+	self.url, self.Post.err = buildUrl(self.url, self.query)
 	if self.Post.err != nil {
 		return &Ret{&self.Post.curl, self.Post.ret, self.Post.err}
 	}
-	self.Post.ret, self.Post.err = req.post(url, postData)
+	self.Post.ret, self.Post.err = req.post(self.url, self.postData)
 	return &Ret{&self.Post.curl, self.Post.ret, self.Post.err}
 }
 
-func (self *PostBuilder) PostJson(url string, queries map[string]interface{}, postData map[string]interface{}, headers map[string]string, cookies map[string]string) *Ret {
+func (self *PostBuilder) PostJson() *Ret {
 	req := self.Post.curl.newRequest().request
 	self.Post.curl.SetHeaderJson()
-	req.SetHeaders(headers)
-	req.SetCookies(cookies)
+	req.SetHeaders(self.header)
+	req.SetCookies(self.cookies)
 	if self.setTimeOut != 0 {
 		req.SetTimeout(self.setTimeOut)
 	}
 	req.DisableKeepAlives(self.Post.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.Post.InsecureSkipVerify})
-	url, self.Post.err = buildUrl(url, queries)
+	self.url, self.Post.err = buildUrl(self.url, self.query)
 	if self.Post.err != nil {
 		return &Ret{&self.Post.curl, self.Post.ret, self.Post.err}
 	}
-	self.Post.ret, self.Post.err = req.post(url, postData)
+	self.Post.ret, self.Post.err = req.post(self.url, self.postData)
 	return &Ret{&self.Post.curl, self.Post.ret, self.Post.err}
 }
