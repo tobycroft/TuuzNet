@@ -19,7 +19,7 @@ func (self Get) New() *Get {
 	return &self
 }
 
-func (self *Get) Get(url string, queries map[string]interface{}, headers map[string]string, cookies map[string]string) *Get {
+func (self *Get) Get(url string, queries map[string]any, headers map[string]string, cookies map[string]string) *Get {
 	req := self.curl.newRequest().request
 	req.SetHeaders(headers)
 	req.SetCookies(cookies)
