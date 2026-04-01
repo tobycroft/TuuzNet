@@ -286,21 +286,21 @@ func parseQuery(url string) ([]string, error) {
 }
 
 // Build GET request url
-func buildUrl(url string, data ...interface{}) (string, error) {
-	query, err := parseQuery(url)
+func buildUrl(url_lines string, data ...interface{}) (string, error) {
+	query, err := parseQuery(url_lines)
 	if err != nil {
-		return url, err
+		return url_lines, err
 	}
 	if len(data) > 0 && data[0] != nil {
 		switch data[0].(type) {
 		case map[string]any:
 			for k, v := range data[0].(map[string]any) {
-				query = append(query, fmt.Sprintf("%s=%s", k, v))
+				query = append(query, fmt.Sprintf("%s=%s", k, url.QueryEscape(Calc.Any2String(v))))
 			}
 			break
 		case map[string]string:
 			for k, v := range data[0].(map[string]string) {
-				query = append(query, fmt.Sprintf("%s=%s", k, v))
+				query = append(query, fmt.Sprintf("%s=%s", k, url.QueryEscape(v)))
 			}
 			break
 		case string:
@@ -310,11 +310,11 @@ func buildUrl(url string, data ...interface{}) (string, error) {
 			}
 			break
 		default:
-			return url, errors.New("incorrect parameter format.")
+			return url_lines, errors.New("incorrect parameter format.")
 		}
 
 	}
-	list := strings.Split(url, "?")
+	list := strings.Split(url_lines, "?")
 	if len(query) > 0 {
 		return fmt.Sprintf("%s?%s", list[0], strings.Join(query, "&")), nil
 	}
