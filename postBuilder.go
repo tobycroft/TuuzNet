@@ -125,7 +125,7 @@ func (self *PostBuilder) SendFormData() *Ret {
 	return &Ret{&self.Post.curl, self.Post.ret, self.Post.err}
 }
 
-func (self *PostBuilder) PostFormDataAny() *Ret {
+func (self *PostBuilder) SendFormDataAny() *Ret {
 	req := self.Post.curl.newRequest().request
 	self.Post.curl.SetHeaderFormData()
 	req.SetHeaders(self.header)
@@ -143,7 +143,11 @@ func (self *PostBuilder) PostFormDataAny() *Ret {
 	return &Ret{&self.Post.curl, self.Post.ret, self.Post.err}
 }
 
-func (self *PostBuilder) PostUrlXEncode() *Ret {
+func (self *PostBuilder) PostFormDataAny() *Ret {
+	return self.SendFormDataAny()
+}
+
+func (self *PostBuilder) SendUrlXEncode() *Ret {
 	req := self.Post.curl.newRequest().request
 	self.Post.curl.SetHeaderUrlEncode()
 	req.SetHeaders(self.header)
@@ -161,7 +165,11 @@ func (self *PostBuilder) PostUrlXEncode() *Ret {
 	return &Ret{&self.Post.curl, self.Post.ret, self.Post.err}
 }
 
-func (self *PostBuilder) PostJson() *Ret {
+func (self *PostBuilder) PostUrlXEncode() *Ret {
+	return self.SendUrlXEncode()
+}
+
+func (self *PostBuilder) SendJson() *Ret {
 	req := self.Post.curl.newRequest().request
 	self.Post.curl.SetHeaderJson()
 	req.SetHeaders(self.header)
@@ -177,4 +185,8 @@ func (self *PostBuilder) PostJson() *Ret {
 	}
 	self.Post.ret, self.Post.err = req.post(self.url, self.postData)
 	return &Ret{&self.Post.curl, self.Post.ret, self.Post.err}
+}
+
+func (self *PostBuilder) PostJson() *Ret {
+	return self.SendJson()
 }
