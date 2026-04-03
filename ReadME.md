@@ -74,20 +74,36 @@ return GroupInfo {}, errors.New(ret1.Status)
 
 Ver+ v1.1.4
 
+Ver 1.11.0+ Support Builder Mode
+
 ```go
-data, err := Net.Post{}.PostUrlXEncode(botinfo["url"].(string)+"/get_group_info", nil, post, nil, nil).RetString()
-if err != nil {
-return GroupInfo{}, err
+get := new(Net.PostBuilder).New()
+get.SetUrl(url_stats)
+get.SetHeader(map[string]string{
+    "user-agent": "your user agent",
+    "ver":        "1.1.0",
+    "platform":   "1",
+})
+//if you need proxy then you can use this
+if proxy_on {
+    auth := &proxy.Auth{
+        User:     socks5_user_if_need,
+        Password: socks5_password_if_have,
+    }
+if !need_auth {
+        auth = nil
+    }
+    get.ProxySocks5("tcp", "127.0.0.1:10808", auth)
+	//if there is no auth needed 
+	//and you dont need to care about whether it will have in the future 
+	//you can directly use nil
+    //get.ProxySocks5("tcp", "127.0.0.1:10808", nil)
 }
-var ret1 GroupInfoRet
-jsr := jsoniter.ConfigCompatibleWithStandardLibrary
-err = jsr.UnmarshalFromString(data, &ret1)
-if err != nil {
-return GroupInfo{}, err
-}
-if ret1.Retcode == 0 {
-return ret1.Data, nil
-} else {
-return GroupInfo{}, errors.New(ret1.Status)
-}
+get.SetPostData(map[string]any{
+    "tags":   "",
+    "system": 28,
+    "lang":   lang,
+})
+retbyte, err := get.PostUrlXEncode().RetBytes()
+
 ```
