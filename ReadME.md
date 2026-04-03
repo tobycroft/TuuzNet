@@ -4,6 +4,22 @@ TuuzNet is a full function simple but high performant http client
 
 For more please visit project wiki
 
+- 能支持的功能(更多可以看wiki)
+    - Get
+        - InlineMode(Done by line)
+        - Builder Mode
+    - Post
+        - InlineMode(Done by line)
+        - Builder Mode
+    - Proxy
+        - socks5
+        - http
+    - Response In
+        - Byte
+        - Json
+        - String
+        - Cookie(Output)
+
 ### What is TuuzNet?
 
 TuuzNet is a Network package for http request curl and websocket, focus in high performance but simple use.
@@ -80,29 +96,29 @@ Ver 1.11.0+ Support Builder Mode
 get := new(Net.PostBuilder).New()
 get.SetUrl(url_stats)
 get.SetHeader(map[string]string{
-    "user-agent": "your user agent",
-    "ver":        "1.1.0",
-    "platform":   "1",
+"user-agent": "your user agent",
+"ver":        "1.1.0",
+"platform":   "1",
 })
 //if you need proxy then you can use this
 if proxy_on {
-    auth := &proxy.Auth{
-        User:     socks5_user_if_need,
-        Password: socks5_password_if_have,
-    }
+auth := &proxy.Auth{
+User:     socks5_user_if_need,
+Password: socks5_password_if_have,
+}
 if !need_auth {
-        auth = nil
-    }
-    get.ProxySocks5("tcp", "127.0.0.1:10808", auth)
-	//if there is no auth needed 
-	//and you dont need to care about whether it will have in the future 
-	//you can directly use nil
-    //get.ProxySocks5("tcp", "127.0.0.1:10808", nil)
+auth = nil
+}
+get.ProxySocks5("tcp", "127.0.0.1:10808", auth)
+//if there is no auth needed 
+//and you dont need to care about whether it will have in the future 
+//you can directly use nil
+//get.ProxySocks5("tcp", "127.0.0.1:10808", nil)
 }
 get.SetPostData(map[string]any{
-    "tags":   "",
-    "system": 28,
-    "lang":   lang,
+"tags":   "",
+"system": 28,
+"lang":   lang,
 })
 retbyte, err := get.PostUrlXEncode().RetBytes()
 
