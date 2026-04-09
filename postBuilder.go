@@ -16,6 +16,7 @@ type PostBuilder struct {
 	header     map[string]string
 	cookies    map[string]string
 	setTimeOut time.Duration
+	debug      bool
 	Post       *Post
 }
 
@@ -99,6 +100,7 @@ func (self *PostBuilder) DisableKeepAlives() *PostBuilder {
 
 func (self *PostBuilder) SendRPC(username, password string) *Ret {
 	req := self.Post.curl.newRequest().request
+	req.Debug(self.debug)
 	self.Post.curl.SetHeaderJson()
 	req.SetBasicAuth(username, password)
 	if self.setTimeOut != 0 {
@@ -113,6 +115,7 @@ func (self *PostBuilder) SendRPC(username, password string) *Ret {
 
 func (self *PostBuilder) SendRAW(postData interface{}) *Ret {
 	req := self.Post.curl.newRequest().request
+	req.Debug(self.debug)
 	self.Post.curl.SetHeaderTextPlain()
 	if self.setTimeOut != 0 {
 		req.SetTimeout(self.setTimeOut)
@@ -125,6 +128,7 @@ func (self *PostBuilder) SendRAW(postData interface{}) *Ret {
 
 func (self *PostBuilder) SendFormData() *Ret {
 	req := self.Post.curl.newRequest().request
+	req.Debug(self.debug)
 	self.Post.curl.SetHeaderFormData()
 	req.SetHeaders(self.header)
 	req.SetCookies(self.cookies)
@@ -143,6 +147,7 @@ func (self *PostBuilder) SendFormData() *Ret {
 
 func (self *PostBuilder) SendFormDataAny() *Ret {
 	req := self.Post.curl.newRequest().request
+	req.Debug(self.debug)
 	self.Post.curl.SetHeaderFormData()
 	req.SetHeaders(self.header)
 	req.SetCookies(self.cookies)
@@ -165,6 +170,7 @@ func (self *PostBuilder) PostFormDataAny() *Ret {
 
 func (self *PostBuilder) SendUrlXEncode() *Ret {
 	req := self.Post.curl.newRequest().request
+	req.Debug(self.debug)
 	self.Post.curl.SetHeaderUrlEncode()
 	req.SetHeaders(self.header)
 	req.SetCookies(self.cookies)
@@ -187,6 +193,7 @@ func (self *PostBuilder) PostUrlXEncode() *Ret {
 
 func (self *PostBuilder) SendJson() *Ret {
 	req := self.Post.curl.newRequest().request
+	req.Debug(self.debug)
 	self.Post.curl.SetHeaderJson()
 	req.SetHeaders(self.header)
 	req.SetCookies(self.cookies)

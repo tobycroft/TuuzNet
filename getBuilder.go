@@ -15,6 +15,7 @@ type GetBuilder struct {
 	header     map[string]string
 	cookies    map[string]string
 	setTimeOut time.Duration
+	debug      bool
 	Get        *Get
 }
 
@@ -91,6 +92,7 @@ func (self *GetBuilder) DisableKeepAlives() *GetBuilder {
 
 func (self *GetBuilder) SendGet() *Ret {
 	req := self.Get.curl.newRequest().request
+	req.Debug(self.debug)
 	req.SetHeaders(self.header)
 	req.SetCookies(self.cookies)
 	req.SetTimeout(self.setTimeOut)
