@@ -2,6 +2,7 @@ package TuuzNet
 
 import (
 	"crypto/tls"
+	"log"
 	"net/http"
 	"net/url"
 	"time"
@@ -16,6 +17,7 @@ type PostBuilder struct {
 	header     map[string]string
 	cookies    map[string]string
 	setTimeOut time.Duration
+	debug      bool
 	Post       *Post
 }
 
@@ -27,6 +29,10 @@ func (self PostBuilder) New() *PostBuilder {
 	self.cookies = map[string]string{}
 	self.postData = map[string]any{}
 	return &self
+}
+
+func (self *PostBuilder) Debug() {
+	self.debug = true
 }
 
 func (self *PostBuilder) Proxy(proxyUrl string) *PostBuilder {
@@ -103,6 +109,9 @@ func (self *PostBuilder) SendRPC(username, password string) *Ret {
 	req.DisableKeepAlives(self.Post.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.Post.InsecureSkipVerify})
 	self.url, self.Post.err = buildUrl(self.url, self.query)
+	if self.debug {
+		log.Println(self.url, self.postData)
+	}
 	self.Post.ret, self.Post.err = req.post(self.url, self.postData)
 	return &Ret{&self.Post.curl, self.Post.ret, self.Post.err}
 }
@@ -130,6 +139,9 @@ func (self *PostBuilder) SendFormData() *Ret {
 	req.DisableKeepAlives(self.Post.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.Post.InsecureSkipVerify})
 	self.url, self.Post.err = buildUrl(self.url, self.query)
+	if self.debug {
+		log.Println(self.url, self.postData)
+	}
 	if self.Post.err != nil {
 		return &Ret{&self.Post.curl, self.Post.ret, self.Post.err}
 	}
@@ -148,6 +160,9 @@ func (self *PostBuilder) SendFormDataAny() *Ret {
 	req.DisableKeepAlives(self.Post.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.Post.InsecureSkipVerify})
 	self.url, self.Post.err = buildUrl(self.url, self.query)
+	if self.debug {
+		log.Println(self.url, self.postData)
+	}
 	if self.Post.err != nil {
 		return &Ret{&self.Post.curl, self.Post.ret, self.Post.err}
 	}
@@ -170,6 +185,9 @@ func (self *PostBuilder) SendUrlXEncode() *Ret {
 	req.DisableKeepAlives(self.Post.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.Post.InsecureSkipVerify})
 	self.url, self.Post.err = buildUrl(self.url, self.query)
+	if self.debug {
+		log.Println(self.url, self.postData)
+	}
 	if self.Post.err != nil {
 		return &Ret{&self.Post.curl, self.Post.ret, self.Post.err}
 	}
@@ -192,6 +210,9 @@ func (self *PostBuilder) SendJson() *Ret {
 	req.DisableKeepAlives(self.Post.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.Post.InsecureSkipVerify})
 	self.url, self.Post.err = buildUrl(self.url, self.query)
+	if self.debug {
+		log.Println(self.url, self.postData)
+	}
 	if self.Post.err != nil {
 		return &Ret{&self.Post.curl, self.Post.ret, self.Post.err}
 	}
