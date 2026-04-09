@@ -22,6 +22,10 @@ type PostBuilder struct {
 func (self PostBuilder) New() *PostBuilder {
 	self.Post = new(Post)
 	self.setTimeOut = 5
+	self.query = map[string]any{}
+	self.header = map[string]string{}
+	self.cookies = map[string]string{}
+	self.postData = map[string]any{}
 	return &self
 }
 

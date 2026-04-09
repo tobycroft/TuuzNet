@@ -21,6 +21,9 @@ type GetBuilder struct {
 func (self GetBuilder) New() *GetBuilder {
 	self.Get = new(Get)
 	self.setTimeOut = 5
+	self.query = map[string]any{}
+	self.header = map[string]string{}
+	self.cookies = map[string]string{}
 	return &self
 }
 
