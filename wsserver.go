@@ -1,11 +1,12 @@
-package Net
+package TuuzNet
 
 import (
-	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 type WsData struct {

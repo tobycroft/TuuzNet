@@ -1,13 +1,14 @@
-package Net
+package TuuzNet
 
 import (
 	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/bytedance/sonic"
 	"io"
 	"net/http"
+
+	"github.com/bytedance/sonic"
 )
 
 type response struct {

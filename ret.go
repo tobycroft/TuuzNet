@@ -1,4 +1,4 @@
-package Net
+package TuuzNet
 
 type Ret struct {
 	curl *Curl

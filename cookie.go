@@ -1,4 +1,4 @@
-package Net
+package TuuzNet
 
 import (
 	"net/http"

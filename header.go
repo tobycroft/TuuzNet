@@ -1,4 +1,4 @@
-package Net
+package TuuzNet
 
 func (h *Curl) SetHeaderJson() *Curl {
 	h.request.SetHeaders(map[string]string{"Content-Type": "application/json"})
