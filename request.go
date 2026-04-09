@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"sort"
 	"strings"
 	"time"
 
@@ -294,26 +295,45 @@ func buildUrl(url_lines string, data ...interface{}) (string, error) {
 	if len(data) > 0 && data[0] != nil {
 		switch data[0].(type) {
 		case map[string]any:
-			for k, v := range data[0].(map[string]any) {
-				query = append(query, fmt.Sprintf("%s=%s", k, url.QueryEscape(Calc.Any2String(v))))
+			params := data[0].(map[string]any)
+			// 提取 key 并排序
+			keys := make([]string, 0, len(params))
+			for k := range params {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
+			// 按排序后的 key 拼接
+			for _, k := range keys {
+				query = append(query, fmt.Sprintf("%s=%s", k, url.QueryEscape(Calc.Any2String(params[k]))))
 			}
 			break
+
 		case map[string]string:
-			for k, v := range data[0].(map[string]string) {
-				query = append(query, fmt.Sprintf("%s=%s", k, url.QueryEscape(v)))
+			params := data[0].(map[string]string)
+			// 提取 key 并排序
+			keys := make([]string, 0, len(params))
+			for k := range params {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
+			// 按排序后的 key 拼接
+			for _, k := range keys {
+				query = append(query, fmt.Sprintf("%s=%s", k, url.QueryEscape(params[k])))
 			}
 			break
+
 		case string:
 			param := data[0].(string)
 			if param != "" {
 				query = append(query, param)
 			}
 			break
+
 		default:
 			return url_lines, errors.New("incorrect parameter format.")
 		}
-
 	}
+
 	list := strings.Split(url_lines, "?")
 	if len(query) > 0 {
 		return fmt.Sprintf("%s?%s", list[0], strings.Join(query, "&")), nil
