@@ -47,22 +47,30 @@ func (self *PostBuilder) SetUrl(url string) *PostBuilder {
 }
 
 func (self *PostBuilder) SetQuery(query map[string]any) *PostBuilder {
-	self.query = query
+	for s, a := range query {
+		self.query[s] = a
+	}
 	return self
 }
 
 func (self *PostBuilder) SetPostData(postData map[string]any) *PostBuilder {
-	self.postData = postData
+	for s, a := range postData {
+		self.postData[s] = a
+	}
 	return self
 }
 
 func (self *PostBuilder) SetHeader(header map[string]string) *PostBuilder {
-	self.header = header
+	for s, s2 := range header {
+		self.header[s] = s2
+	}
 	return self
 }
 
 func (self *PostBuilder) SetCookies(cookies map[string]string) *PostBuilder {
-	self.cookies = cookies
+	for s, s2 := range cookies {
+		self.cookies[s] = s2
+	}
 	return self
 }
 

@@ -47,17 +47,23 @@ func (self *GetBuilder) SetUrl(url string) *GetBuilder {
 }
 
 func (self *GetBuilder) SetQuery(query map[string]any) *GetBuilder {
-	self.query = query
+	for s, a := range query {
+		self.query[s] = a
+	}
 	return self
 }
 
 func (self *GetBuilder) SetHeader(header map[string]string) *GetBuilder {
-	self.header = header
+	for s, s2 := range header {
+		self.header[s] = s2
+	}
 	return self
 }
 
 func (self *GetBuilder) SetCookies(cookies map[string]string) *GetBuilder {
-	self.cookies = cookies
+	for s, s2 := range cookies {
+		self.cookies[s] = s2
+	}
 	return self
 }
 
