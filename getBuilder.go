@@ -2,7 +2,6 @@ package TuuzNet
 
 import (
 	"crypto/tls"
-	"log"
 	"net/http"
 	"net/url"
 	"time"
@@ -16,7 +15,6 @@ type GetBuilder struct {
 	header     map[string]string
 	cookies    map[string]string
 	setTimeOut time.Duration
-	debug      bool
 	Get        *Get
 }
 
@@ -30,7 +28,7 @@ func (self GetBuilder) New() *GetBuilder {
 }
 
 func (self *GetBuilder) Debug() {
-	self.debug = true
+	self.Get.curl.request.debug = true
 }
 
 // proxy by socks5 is dont by golang proxy module
@@ -98,9 +96,6 @@ func (self *GetBuilder) SendGet() *Ret {
 	req.SetTimeout(self.setTimeOut)
 	req.DisableKeepAlives(self.Get.DisableKeepAlives)
 	req.SetTLSClient(&tls.Config{InsecureSkipVerify: self.Get.InsecureSkipVerify})
-	if self.debug {
-		log.Println(self.url, self.query)
-	}
 	self.Get.ret, self.Get.err = req.Get(self.url, self.query)
 	return &Ret{&self.Get.curl, self.Get.ret, self.Get.err}
 }
