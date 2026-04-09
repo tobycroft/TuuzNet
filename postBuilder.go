@@ -31,7 +31,7 @@ func (self PostBuilder) New() *PostBuilder {
 }
 
 func (self *PostBuilder) Debug() {
-	self.Post.curl.request.debug = true
+	self.debug = true
 }
 
 func (self *PostBuilder) Proxy(proxyUrl string) *PostBuilder {

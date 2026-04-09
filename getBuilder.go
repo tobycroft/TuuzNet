@@ -29,7 +29,7 @@ func (self GetBuilder) New() *GetBuilder {
 }
 
 func (self *GetBuilder) Debug() {
-	self.Get.curl.request.debug = true
+	self.debug = true
 }
 
 // proxy by socks5 is dont by golang proxy module
